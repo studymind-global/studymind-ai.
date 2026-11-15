@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyMind AI — Your Personal Study Assistant</title>
+  <meta name="description" content="Study smarter with StudyMind AI. Your personal AI study assistant for homework, English and quizzes.">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #0b1020;
+      color: #f5f7ff;
+      min-height: 100vh;
+    }
+    header {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8%;
+      border-bottom: 1px solid #202943;
+    }
+    .logo { font-size: 23px; font-weight: 800; }
+    .logo span { color: #8b7cff; }
+    nav { display: flex; gap: 28px; }
+    nav a { color: #aeb8d0; text-decoration: none; font-size: 14px; }
+    nav a:hover { color: white; }
+    .hero {
+      text-align: center;
+      padding: 95px 20px 65px;
+      background: radial-gradient(ellipse at top, #252052 0%, #0b1020 65%);
+    }
+    .tag {
+      display: inline-block;
+      border: 1px solid #5145a8;
+      color: #b9b0ff;
+      background: #211d45;
+      border-radius: 30px;
+      padding: 9px 17px;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+    h1 {
+      font-size: clamp(38px, 6vw, 65px);
+      line-height: 1.1;
+      max-width: 850px;
+      margin: auto;
+      letter-spacing: -2px;
+    }
+    h1 span {
+      background: linear-gradient(90deg, #a99cff, #68d9ff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      color: #aab4ce;
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    .primary {
+      background: #7865f7;
+      color: white;
+      padding: 15px 27px;
+      border: 0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary:hover { background: #6552e6; }
+    .section {
+      padding: 45px 8% 75px;
+      max-width: 1250px;
+      margin: auto;
+    }
+    .section h2 { font-size: 30px; margin-bottom: 12px; }
+    .sub { color: #929db7; margin-bottom: 30px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: #141c31;
+      border: 1px solid #27324d;
+      padding: 25px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #8270ff;
+    }
+    .emoji { font-size: 30px; margin-bottom: 18px; }
+    .card h3 { margin-bottom: 10px; font-size: 19px; }
+    .card p { color: #9ba7c0; line-height: 1.6; font-size: 14px; }
+    .workspace {
+      margin-top: 35px;
+      background: #141c31;
+      border: 1px solid #303c5a;
+      border-radius: 16px;
+      padding: 25px;
+    }
+    .workspace h3 { margin-bottom: 10px; }
+    .workspace p { color: #aab4ce; margin-bottom: 17px; }
+    textarea {
+      width: 100%;
+      min-height: 115px;
+      resize: vertical;
+      background: #0b1020;
+      border: 1px solid #34415e;
+      border-radius: 10px;
+      color: white;
+      padding: 15px;
+      font: inherit;
+      outline: none;
+    }
+    textarea:focus { border-color: #8270ff; }
+    .workspace .primary { margin-top: 14px; }
+    #result {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      background: #202943;
+      border-radius: 10px;
+      line-height: 1.6;
+      color: #d9e0f4;
+    }
+    footer {
+      border-top: 1px solid #202943;
+      text-align: center;
+      padding: 30px;
+      color: #77839e;
+      font-size: 13px;
+    }
+    @media(max-width: 650px) {
+      header { padding: 0 5%; }
+      nav { gap: 12px; }
+      nav a { font-size: 12px; }
+      .hero { padding-top: 70px; }
+      .section { padding-left: 5%; padding-right: 5%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">StudyMind <span>AI</span></div>
+    <nav>
+      <a href="#tools">Tools</a>
+      <a href="#workspace">Try it</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="tag">✦ Your personal AI study assistant</div>
+    <h1>Study smarter.<br><span>Achieve more.</span></h1>
+    <p>
+      Learn faster, understand difficult topics and improve your skills.
+      Your journey to smarter learning starts here.
+    </p>
+    <button class="primary" onclick="document.getElementById('tools').scrollIntoView({behavior:'smooth'})">
+      Explore tools →
+    </button>
+  </section>
+
+  <section class="section" id="tools">
+    <h2>What can you learn today?</h2>
+    <p class="sub">Choose a tool and start learning.</p>
+
+    <div class="cards">
+      <div class="card" onclick="chooseTool('AI Homework')">
+        <div class="emoji">📚</div>
+        <h3>AI Homework</h3>
+        <p>Understand homework problems with clear, step-by-step explanations.</p>
+      </div>
+      <div class="card" onclick="chooseTool('AI English')">
+        <div class="emoji">🌍</div>
+        <h3>AI English</h3>
+        <p>Practice grammar, learn vocabulary and improve your English.</p>
+      </div>
+      <div class="card" onclick="chooseTool('AI Quiz')">
+        <div class="emoji">🧠</div>
+        <h3>AI Quiz</h3>
+        <p>Test your knowledge and create practice questions.</p>
+      </div>
+    </div>
+
+    <div class="workspace" id="workspace">
+      <h3 id="toolTitle">Try StudyMind AI</h3>
+      <p id="toolDescription">Choose a tool above and enter what you want to learn.</p>
+      <textarea id="question" placeholder="Enter your question here..."></textarea>
+      <button class="primary" onclick="tryDemo()">Start learning →</button>
+      <div id="result"></div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <h2>Learning made simpler.</h2>
+    <p class="sub">
+      StudyMind AI is being built to make learning easier and more accessible
+      for students around the world.
+    </p>
+  </section>
+
+  <footer>
+    © 2026 StudyMind AI. Built for curious minds.
+  </footer>
+
+  <script>
+    let selectedTool = "StudyMind AI";
+
+    function chooseTool(tool) {
+      selectedTool = tool;
+      document.getElementById("toolTitle").textContent = tool;
+      document.getElementById("toolDescription").textContent =
+        "Enter your question below to try the " + tool + " demo.";
+      document.getElementById("workspace").scrollIntoView({behavior:"smooth"});
+    }
+
+    function tryDemo() {
+      const question = document.getElementById("question").value.trim();
+      const result = document.getElementById("result");
+
+      if (!question) {
+        result.style.display = "block";
+        result.textContent = "Please enter a question first.";
+        return;
+      }
+
+      result.style.display = "block";
+      result.textContent =
+        "Thanks for trying " + selectedTool + "! This is the first website preview. " +
+        "The AI connection is not installed yet. We will add the real AI engine in the next development stage.";
+    }
+  </script>
+</body>
+</html>
