@@ -11,21 +11,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#1b1311; --surface:#2b201c; --surface2:#33261f; --sidebar:#130d0b; --ink:#fff; --mute:#98989f;
-  --line:rgba(120,120,128,.32); --fill:rgba(118,118,128,.24); --glass:rgba(32,20,16,.72);
-  --accent:#ff4a2b; --accent2:#ffb800; --grad:linear-gradient(135deg,#ff3b30,#ffa00a);
-  --shadow:0 10px 40px rgba(0,0,0,.5);
+  --bg:#1a1816; --surface:#252220; --surface2:#2d2926; --sidebar:#141211;
+  --ink:#e8e4de; --mute:#9a948b;
+  --line:rgba(255,255,255,.08); --fill:rgba(255,255,255,.06); --glass:rgba(37,34,32,.82);
+  --accent:#d9644a; --accent2:#e8a24a; --grad:linear-gradient(135deg,#e0674d,#e8a24a);
+  --shadow:0 6px 24px rgba(0,0,0,.28);
 }
 @media (prefers-color-scheme:light){:root{
-  --bg:#fff5e8; --surface:#fff; --surface2:#ffe8d0; --sidebar:#ffeedd; --ink:#000; --mute:#6e6e73;
-  --line:rgba(60,60,67,.16); --fill:rgba(118,118,128,.12); --glass:rgba(255,255,255,.74);
-  --shadow:0 10px 40px rgba(0,0,0,.1);
+  --bg:#f6f2ec; --surface:#fffdf9; --surface2:#ece6dd; --sidebar:#efe9e0;
+  --ink:#2b2622; --mute:#7a7268;
+  --line:rgba(60,45,30,.12); --fill:rgba(60,45,30,.06); --glass:rgba(255,253,249,.82);
+  --shadow:0 6px 24px rgba(60,45,30,.09);
 }}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);display:flex;gap:12px;padding:12px;overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid rgba(255,74,43,.55);outline-offset:2px}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid rgba(217,100,74,.55);outline-offset:2px}
 
 .side{width:288px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 12px;border-radius:26px;z-index:30;background:var(--glass);border:.5px solid var(--line);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);transition:transform .3s cubic-bezier(.32,.72,0,1)}
 .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 6px;font-weight:700;font-size:20px;letter-spacing:-.3px}
@@ -44,7 +46,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .history{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;min-height:60px}
 .hitem{display:flex;align-items:center;border-radius:12px}
 .hitem:hover{background:var(--fill)}
-.hitem.active{background:rgba(255,74,43,.18)}
+.hitem.active{background:rgba(217,100,74,.18)}
 .htitle{flex:1;text-align:left;padding:10px 14px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdel{padding:6px 12px;color:var(--mute);opacity:0}
 .hitem:hover .hdel,.hdel:focus-visible{opacity:1}
@@ -61,7 +63,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .burger{padding:7px 12px;border-radius:12px;background:var(--glass);border:.5px solid var(--line);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column}
 .welcome{margin:auto;text-align:center;padding:20px;max-width:780px;width:100%}
-.mark{width:60px;height:60px;margin:0 auto 18px;filter:drop-shadow(0 8px 24px rgba(255,74,43,.45))}
+.mark{width:60px;height:60px;margin:0 auto 18px;filter:drop-shadow(0 8px 24px rgba(217,100,74,.45))}
 .welcome h1{font-size:clamp(30px,4.6vw,44px);font-weight:700;letter-spacing:-1.2px;line-height:1.1;margin-bottom:10px}
 .welcome p{color:var(--mute);margin:0 auto 26px;line-height:1.5;max-width:460px;font-size:16px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;text-align:left}
@@ -86,7 +88,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 
 .dock{padding:8px 8px calc(6px + env(safe-area-inset-bottom,0px));width:100%;max-width:780px;margin:0 auto}
 .box{background:var(--glass);border:.5px solid var(--line);border-radius:28px;padding:10px 10px 8px 14px;backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
-.box:focus-within{border-color:rgba(255,74,43,.7);box-shadow:var(--shadow),0 0 0 4px rgba(255,74,43,.18)}
+.box:focus-within{border-color:rgba(217,100,74,.7);box-shadow:var(--shadow),0 0 0 4px rgba(217,100,74,.18)}
 .pending{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .pending:empty{display:none}
 .pfile{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 9px 7px 12px;border-radius:12px;background:var(--fill);max-width:240px}
@@ -146,13 +148,20 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
   .burger{display:block}
   .top{padding:10px 14px}
 }
+.sw{position:relative}
+.sw .search{padding-right:42px}
+.sw .ibtn{position:absolute;right:2px;top:2px;width:34px;height:34px}
+#micBtn{order:4}
+.send{order:5}
+.ibtn.rec{color:#fff;background:#d9534f;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,83,79,.4)}100%{box-shadow:0 0 0 12px rgba(217,83,79,0)}}
 </style>
 </head>
 <body>
 
 <aside class="side" id="side">
   <div class="brand">
-    <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3b30"/><stop offset="1" stop-color="#ffb800"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g1)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0674d"/><stop offset="1" stop-color="#e8a24a"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g1)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div>NBSK <small>AI</small></div>
   </div>
 
@@ -161,7 +170,7 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
     Новый чат
   </button>
 
-  <input class="search" id="search" type="search" placeholder="Поиск по чатам" aria-label="Поиск по чатам">
+  <div class="sw"><input class="search" id="search" type="search" placeholder="Поиск по чатам" aria-label="Поиск по чатам"><button class="ibtn" id="micSearch" aria-label="Голосовой поиск" title="Голосовой поиск"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div>
 
   <div class="nav">
     <button class="navitem" data-soon="Проекты">Проекты <span class="soon">Скоро</span></button>
@@ -201,6 +210,7 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 9"/></svg>
         </button>
         <div class="sp"></div>
+        <button class="ibtn" id="micBtn" aria-label="Голосовой ввод" title="Голосовой ввод"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
         <button class="send" id="sendBtn" aria-label="Отправить" disabled>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
@@ -271,7 +281,7 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
     s.textContent = "";
     if (!c || !c.messages.length) {
       var w = el("div","welcome");
-      w.innerHTML = '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3b30"/><stop offset="1" stop-color="#ffb800"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g2)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      w.innerHTML = '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0674d"/><stop offset="1" stop-color="#e8a24a"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g2)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       w.appendChild(el("h1","","Привет! Что учим сегодня?"));
       w.appendChild(el("p","","Выберите предмет или задайте свой вопрос. Можно прикрепить фото задания или файл."));
       s.appendChild(w);
@@ -333,6 +343,37 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
     noteTimer = setTimeout(function(){ n.textContent = "Первая версия интерфейса. ИИ пока не подключён."; }, 3500);
     closeMenu();
   }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, recBtn = null;
+  function flash(msg){
+    var n = $("note"); n.textContent = msg;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function(){ n.textContent = "Первая версия интерфейса. ИИ пока не подключён."; }, 5000);
+  }
+  function voice(btn, input){
+    if (!SR) { flash("Голосовой ввод не поддерживается в этом браузере. Откройте сайт в Chrome, Edge или Safari."); return; }
+    if (rec) { var same = (recBtn === btn); try { rec.stop(); } catch(e){} if (same) return; }
+    var r = new SR();
+    r.lang = "ru-RU"; r.interimResults = true; r.continuous = false;
+    var start = input.value ? input.value.replace(/\s*$/, " ") : "";
+    r.onresult = function(e){
+      var t = "";
+      for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+      input.value = start + t;
+      input.dispatchEvent(new Event("input"));
+    };
+    r.onerror = function(e){
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") flash("Нет доступа к микрофону. Разрешите его через значок замка в адресной строке.");
+      else if (e.error === "no-speech") flash("Речь не распознана. Попробуйте ещё раз.");
+      else if (e.error !== "aborted") flash("Ошибка голосового ввода: " + e.error);
+    };
+    r.onend = function(){ btn.classList.remove("rec"); if (rec === r) { rec = null; recBtn = null; } };
+    rec = r; recBtn = btn; btn.classList.add("rec");
+    try { r.start(); } catch(e){ btn.classList.remove("rec"); rec = null; recBtn = null; }
+  }
+  $("micBtn").onclick = function(){ voice($("micBtn"), $("input")); };
+  $("micSearch").onclick = function(){ voice($("micSearch"), $("search")); };
 
   $("newBtn").onclick = newChat;
   $("sendBtn").onclick = send;
