@@ -1,243 +1,340 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NBSK AI - Your Personal AI Study Assistant</title>
- <meta name="description" content="Study smarter with NBSK AI. Your personal AI assistant for homework, mathematics, English and learning.">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, Arial, sans-serif;
-      background: #0b1020;
-      color: #f5f7ff;
-      min-height: 100vh;
-    }
-    header {
-      height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8%;
-      border-bottom: 1px solid #202943;
-    }
-    .logo { font-size: 23px; font-weight: 800; }
-    .logo span { color: #8b7cff; }
-    nav { display: flex; gap: 28px; }
-    nav a { color: #aeb8d0; text-decoration: none; font-size: 14px; }
-    nav a:hover { color: white; }
-    .hero {
-      text-align: center;
-      padding: 95px 20px 65px;
-      background: radial-gradient(ellipse at top, #252052 0%, #0b1020 65%);
-    }
-    .tag {
-      display: inline-block;
-      border: 1px solid #5145a8;
-      color: #b9b0ff;
-      background: #211d45;
-      border-radius: 30px;
-      padding: 9px 17px;
-      font-size: 13px;
-      margin-bottom: 25px;
-    }
-    h1 {
-      font-size: clamp(38px, 6vw, 65px);
-      line-height: 1.1;
-      max-width: 850px;
-      margin: auto;
-      letter-spacing: -2px;
-    }
-    h1 span {
-      background: linear-gradient(90deg, #a99cff, #68d9ff);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .hero p {
-      color: #aab4ce;
-      font-size: 17px;
-      line-height: 1.7;
-      max-width: 600px;
-      margin: 24px auto;
-    }
-    .primary {
-      background: #7865f7;
-      color: white;
-      padding: 15px 27px;
-      border: 0;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .primary:hover { background: #6552e6; }
-    .section {
-      padding: 45px 8% 75px;
-      max-width: 1250px;
-      margin: auto;
-    }
-    .section h2 { font-size: 30px; margin-bottom: 12px; }
-    .sub { color: #929db7; margin-bottom: 30px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 18px;
-    }
-    .card {
-      background: #141c31;
-      border: 1px solid #27324d;
-      padding: 25px;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: .2s;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #8270ff;
-    }
-    .emoji { font-size: 30px; margin-bottom: 18px; }
-    .card h3 { margin-bottom: 10px; font-size: 19px; }
-    .card p { color: #9ba7c0; line-height: 1.6; font-size: 14px; }
-    .workspace {
-      margin-top: 35px;
-      background: #141c31;
-      border: 1px solid #303c5a;
-      border-radius: 16px;
-      padding: 25px;
-    }
-    .workspace h3 { margin-bottom: 10px; }
-    .workspace p { color: #aab4ce; margin-bottom: 17px; }
-    textarea {
-      width: 100%;
-      min-height: 115px;
-      resize: vertical;
-      background: #0b1020;
-      border: 1px solid #34415e;
-      border-radius: 10px;
-      color: white;
-      padding: 15px;
-      font: inherit;
-      outline: none;
-    }
-    textarea:focus { border-color: #8270ff; }
-    .workspace .primary { margin-top: 14px; }
-    #result {
-      display: none;
-      margin-top: 18px;
-      padding: 16px;
-      background: #202943;
-      border-radius: 10px;
-      line-height: 1.6;
-      color: #d9e0f4;
-    }
-    footer {
-      border-top: 1px solid #202943;
-      text-align: center;
-      padding: 30px;
-      color: #77839e;
-      font-size: 13px;
-    }
-    @media(max-width: 650px) {
-      header { padding: 0 5%; }
-      nav { gap: 12px; }
-      nav a { font-size: 12px; }
-      .hero { padding-top: 70px; }
-      .section { padding-left: 5%; padding-right: 5%; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NBSK AI</title>
+<meta name="description" content="NBSK AI — личный ИИ-помощник для учёбы: домашние задания, математика, английский.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04050c; --ink:#f3f5ff; --mute:#8b94b8; --line:rgba(140,150,255,.15);
+  --glass:rgba(16,20,46,.55); --glass2:rgba(28,34,72,.65);
+  --violet:#8a7bff; --blue:#4cb4ff;
+  --grad:linear-gradient(135deg,#8a7bff 0%,#4cb4ff 100%);
+  --glow:0 0 0 1px rgba(138,123,255,.55),0 0 40px rgba(138,123,255,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Manrope,system-ui,Arial,sans-serif;color:var(--ink);display:flex;gap:12px;padding:12px;overflow:hidden;
+  background:radial-gradient(900px 520px at 78% -10%,rgba(110,90,255,.38),transparent 60%),radial-gradient(760px 520px at 0% 108%,rgba(40,120,255,.28),transparent 60%),var(--bg)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.side{width:288px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 12px;border-radius:24px;z-index:30;
+  background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.brand{display:flex;align-items:center;gap:11px;padding:2px 8px 8px;font-weight:800;font-size:20px;letter-spacing:.2px}
+.brand svg{filter:drop-shadow(0 0 12px rgba(138,123,255,.7))}
+.brand small{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.newchat{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 14px;border-radius:14px;background:var(--grad);font-weight:700;color:#fff;box-shadow:0 8px 28px rgba(110,110,255,.4);transition:transform .15s,box-shadow .15s}
+.newchat:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(110,110,255,.55)}
+.search{width:100%;padding:11px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--ink);font:inherit;font-size:14px}
+.search::placeholder{color:var(--mute)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.navitem{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 12px;border-radius:12px;color:#b6bee0;font-size:14px;font-weight:500;text-align:left}
+.navitem:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.soon{font-size:11px;font-weight:700;color:#c9c2ff;background:rgba(138,123,255,.16);padding:3px 9px;border-radius:20px}
+.label{font-size:12px;color:var(--mute);padding:10px 12px 2px;font-weight:600}
+.history{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;min-height:60px}
+.hitem{display:flex;align-items:center;gap:4px;border-radius:12px}
+.hitem:hover{background:rgba(255,255,255,.06)}
+.hitem.active{background:rgba(138,123,255,.18);box-shadow:inset 0 0 0 1px rgba(138,123,255,.35)}
+.htitle{flex:1;text-align:left;padding:10px 12px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d3d9f5}
+.hdel{padding:6px 10px;color:var(--mute);opacity:0;border-radius:8px}
+.hitem:hover .hdel,.hdel:focus-visible{opacity:1}
+.hdel:hover{color:#ff8a9b}
+.empty-h{color:var(--mute);font-size:13px;padding:8px 12px}
+.profile{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.ava{width:36px;height:36px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff}
+.pinfo{flex:1;line-height:1.25}
+.pinfo b{font-size:14px;display:block}
+.pinfo span{font-size:12px;color:var(--mute)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.top{display:none;align-items:center;gap:12px;padding:12px 14px}
+.burger{padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--glass)}
+.scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.welcome{margin:auto;text-align:center;padding:30px 20px;max-width:860px;width:100%}
+.mark{width:72px;height:72px;margin:0 auto 26px;filter:drop-shadow(0 0 32px rgba(138,123,255,.75))}
+.welcome h1{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-1.8px;line-height:1.08;margin-bottom:14px}
+.welcome p{color:var(--mute);margin:0 auto 34px;line-height:1.65;max-width:480px;font-size:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;text-align:left}
+.card{display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:20px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-3px);border-color:hsl(var(--h,255) 95% 68% / .7);box-shadow:0 0 0 1px hsl(var(--h,255) 95% 68% / .5),0 0 36px hsl(var(--h,255) 95% 62% / .25)}
+.card i{font-style:normal;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;background:hsl(var(--h,255) 95% 68% / .16);box-shadow:inset 0 0 0 1px hsl(var(--h,255) 95% 68% / .3);margin-bottom:8px}
+.card b{font-size:16px}
+.card span{font-size:13px;color:var(--mute);line-height:1.5}
+.msgs{width:100%;max-width:780px;margin:0 auto;padding:24px 18px;display:flex;flex-direction:column;gap:22px}
+.msg{display:flex;flex-direction:column;gap:8px;max-width:90%;animation:in .22s ease-out}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.bubble{line-height:1.7;white-space:pre-wrap;word-wrap:break-word;font-size:15.5px}
+.user .bubble{padding:12px 18px;border-radius:20px 20px 6px 20px;background:var(--grad);color:#fff;box-shadow:0 8px 26px rgba(100,110,255,.3)}
+.ai .bubble{position:relative;padding:2px 0 2px 46px;color:#dfe4fb}
+.ai .bubble::before{content:"N";position:absolute;left:0;top:0;width:32px;height:32px;border-radius:10px;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;box-shadow:0 0 18px rgba(138,123,255,.5)}
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.file{font-size:12px;padding:6px 11px;border-radius:10px;background:var(--glass2);border:1px solid var(--line);color:#d3d9f5;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.dock{padding:8px 8px calc(6px + env(safe-area-inset-bottom,0px));width:100%;max-width:800px;margin:0 auto}
+.box{background:var(--glass);border:1px solid var(--line);border-radius:26px;padding:12px 12px 10px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:border-color .2s,box-shadow .2s}
+.box:focus-within{box-shadow:var(--glow),0 20px 60px rgba(0,0,0,.45)}
+.pending{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.pending:empty{display:none}
+.pfile{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 9px 7px 12px;border-radius:12px;background:var(--glass2);border:1px solid var(--line);max-width:240px}
+.pfile span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pfile button{color:var(--mute);padding:0 4px}
+.pfile button:hover{color:#ff8a9b}
+textarea{width:100%;background:none;border:0;color:var(--ink);font:inherit;font-size:15.5px;line-height:1.55;resize:none;max-height:200px;outline:none;padding:6px 8px}
+textarea::placeholder{color:var(--mute)}
+.row{display:flex;align-items:center;gap:4px;margin-top:4px}
+.ibtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--mute)}
+.ibtn:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.sp{flex:1}
+.send{width:42px;height:42px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;box-shadow:0 6px 20px rgba(110,110,255,.5);transition:transform .15s,opacity .15s}
+.send:hover{transform:scale(1.07)}
+.send:disabled{opacity:.3;cursor:default;transform:none;box-shadow:none}
+.note{text-align:center;font-size:12px;color:var(--mute);margin-top:10px}
+
+.shade{display:none}
+@media(max-width:820px){
+  body{padding:0;gap:0}
+  .side{position:fixed;inset:10px auto 10px 10px;transform:translateX(-110%);width:min(300px,86vw)}
+  .side.open{transform:none}
+  .shade.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20}
+  .top{display:flex}
+  .msg{max-width:96%}
+  .cards{grid-template-columns:1fr}
+  .card{flex-direction:row;align-items:center;gap:14px}
+  .card i{margin:0;flex:none}
+  .card div{display:flex;flex-direction:column;gap:2px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">StudyMind <span>AI</span></div>
-    <nav>
-      <a href="#tools">Tools</a>
-      <a href="#workspace">Try it</a>
-      <a href="#about">About</a>
-    </nav>
-  </header>
 
-  <section class="hero">
-    <div class="tag">✦ Your personal AI study assistant</div>
-    <h1>Study smarter.<br><span>Achieve more.</span></h1>
-    <p>
-      Learn faster, understand difficult topics and improve your skills.
-      Your journey to smarter learning starts here.
-    </p>
-    <button class="primary" onclick="document.getElementById('tools').scrollIntoView({behavior:'smooth'})">
-      Explore tools →
+<aside class="side" id="side">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c6cff"/><stop offset="1" stop-color="#4aa3ff"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g1)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>NBSK <small>AI</small></div>
+  </div>
+
+  <button class="newchat" id="newBtn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Новый чат
+  </button>
+
+  <input class="search" id="search" type="search" placeholder="Поиск по чатам" aria-label="Поиск по чатам">
+
+  <div class="nav">
+    <button class="navitem" data-soon="Проекты">Проекты <span class="soon">Скоро</span></button>
+    <button class="navitem" data-soon="Коннекторы">Коннекторы <span class="soon">Скоро</span></button>
+  </div>
+
+  <div class="label">История</div>
+  <div class="history" id="history"></div>
+
+  <div class="profile">
+    <div class="ava">Г</div>
+    <div class="pinfo"><b>Гость</b><span>Вход появится скоро</span></div>
+    <button class="ibtn" data-soon="Настройки" aria-label="Настройки">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
     </button>
-  </section>
+  </div>
+</aside>
+<div class="shade" id="shade"></div>
 
-  <section class="section" id="tools">
-    <h2>What can you learn today?</h2>
-    <p class="sub">Choose a tool and start learning.</p>
+<main class="main">
+  <div class="top">
+    <button class="burger" id="burger" aria-label="Открыть меню">☰</button>
+    <b>NBSK AI</b>
+  </div>
 
-    <div class="cards">
-      <div class="card" onclick="chooseTool('AI Homework')">
-        <div class="emoji">📚</div>
-        <h3>AI Homework</h3>
-        <p>Understand homework problems with clear, step-by-step explanations.</p>
+  <div class="scroll" id="scroll"></div>
+
+  <div class="dock">
+    <div class="box">
+      <div class="pending" id="pending"></div>
+      <textarea id="input" rows="1" placeholder="Напишите вопрос или прикрепите файл…" aria-label="Сообщение"></textarea>
+      <div class="row">
+        <button class="ibtn" id="fileBtn" aria-label="Прикрепить файлы" title="Прикрепить файлы">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.4-8.4"/></svg>
+        </button>
+        <button class="ibtn" id="photoBtn" aria-label="Загрузить фото" title="Загрузить фото">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 9"/></svg>
+        </button>
+        <div class="sp"></div>
+        <button class="send" id="sendBtn" aria-label="Отправить" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
       </div>
-      <div class="card" onclick="chooseTool('AI English')">
-        <div class="emoji">🌍</div>
-        <h3>AI English</h3>
-        <p>Practice grammar, learn vocabulary and improve your English.</p>
-      </div>
-      <div class="card" onclick="chooseTool('AI Quiz')">
-        <div class="emoji">🧠</div>
-        <h3>AI Quiz</h3>
-        <p>Test your knowledge and create practice questions.</p>
-      </div>
+      <input type="file" id="fileIn" multiple hidden>
+      <input type="file" id="photoIn" accept="image/*" multiple hidden>
     </div>
+    <div class="note" id="note">Первая версия интерфейса. ИИ пока не подключён.</div>
+  </div>
+</main>
 
-    <div class="workspace" id="workspace">
-      <h3 id="toolTitle">Try NBSK AI</h3>
-      <p id="toolDescription">Choose a tool above and enter what you want to learn.</p>
-      <textarea id="question" placeholder="Enter your question here..."></textarea>
-      <button class="primary" onclick="tryDemo()">Start learning →</button>
-      <div id="result"></div>
-    </div>
-  </section>
+<script>
+(function(){
+  var KEY = "nbsk_chats_v1";
+  var chats = [], activeId = null, pending = [];
+  var $ = function(id){ return document.getElementById(id); };
 
-  <section class="section" id="about">
-    <h2>Learning made simpler.</h2>
-    <p class="sub">
-      NBSK AI is being built to make learning easier and more accessible
-      for students around the world.
-    </p>
-  </section>
+  function load(){
+    try { chats = JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ chats = []; }
+  }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(chats)); } catch(e){}
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  function active(){ return chats.filter(function(c){ return c.id === activeId; })[0]; }
 
-  <footer>
-    © 2026 NBSK AI Built for curious minds.
-  </footer>
+  function newChat(){
+    var cur = active();
+    if (cur && cur.messages.length === 0) { closeMenu(); render(); $("input").focus(); return; }
+    var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() };
+    chats.unshift(c); activeId = c.id; save(); pending = [];
+    closeMenu(); render(); $("input").focus();
+  }
 
-  <script>
-    let selectedTool = "NBSK AI";
+  function el(tag, cls, text){
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
 
-    function chooseTool(tool) {
-      selectedTool = tool;
-      document.getElementById("toolTitle").textContent = tool;
-      document.getElementById("toolDescription").textContent =
-        "Enter your question below to try the " + tool + " demo.";
-      document.getElementById("workspace").scrollIntoView({behavior:"smooth"});
+  function renderHistory(){
+    var box = $("history"), q = $("search").value.trim().toLowerCase();
+    box.textContent = "";
+    var list = chats.filter(function(c){
+      if (!c.messages.length && c.id !== activeId) return false;
+      return !q || c.title.toLowerCase().indexOf(q) !== -1;
+    });
+    if (!list.length) { box.appendChild(el("div","empty-h", q ? "Ничего не найдено" : "Пока нет чатов")); return; }
+    list.forEach(function(c){
+      var row = el("div", "hitem" + (c.id === activeId ? " active" : ""));
+      var t = el("button","htitle", c.title);
+      t.onclick = function(){ activeId = c.id; pending = []; closeMenu(); render(); };
+      var d = el("button","hdel","✕"); d.setAttribute("aria-label","Удалить чат");
+      d.onclick = function(){
+        if (!confirm("Удалить этот чат?")) return;
+        chats = chats.filter(function(x){ return x.id !== c.id; });
+        if (activeId === c.id) { activeId = chats.length ? chats[0].id : null; }
+        if (!activeId) { newChat(); return; }
+        save(); render();
+      };
+      row.appendChild(t); row.appendChild(d); box.appendChild(row);
+    });
+  }
+
+  function renderMain(){
+    var s = $("scroll"), c = active();
+    s.textContent = "";
+    if (!c || !c.messages.length) {
+      var w = el("div","welcome");
+      w.innerHTML = '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c6cff"/><stop offset="1" stop-color="#4aa3ff"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#g2)"/><path d="M19 47V17l26 30V17" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      w.appendChild(el("h1","","Привет! Что учим сегодня?"));
+      w.appendChild(el("p","","Выберите предмет или задайте свой вопрос. Можно прикрепить фото задания или файл."));
+      var ch = el("div","cards");
+      [["📚","Домашнее задание","Разберём задачу пошагово","Помоги разобраться с домашним заданием: ",255],
+       ["➗","Математика","Уравнения, формулы, графики","Объясни и реши по математике: ",205],
+       ["🌍","Английский","Грамматика, слова, практика","Помоги с английским: ",165],
+       ["✍️","Эссе и рефераты","План, текст, проверка","Помоги написать работу на тему: ",320],
+       ["🧠","Квиз","Проверьте свои знания","Составь квиз по теме: ",40],
+       ["📝","Конспект","Сожмём тему до главного","Сделай краткий конспект по теме: ",130]].forEach(function(p){
+        var b = el("button","card");
+        b.appendChild(el("i","",p[0]));
+        b.style.setProperty("--h",p[4]);
+        var d = el("div"); d.appendChild(el("b","",p[1])); d.appendChild(el("span","",p[2]));
+        b.appendChild(d);
+        b.onclick = function(){ $("input").value = p[3]; autosize(); $("input").focus(); updateSend(); };
+        ch.appendChild(b);
+      });
+      w.appendChild(ch); s.appendChild(w);
+    } else {
+      var m = el("div","msgs");
+      c.messages.forEach(function(msg){
+        var d = el("div","msg " + (msg.role === "user" ? "user" : "ai"));
+        if (msg.files && msg.files.length) {
+          var f = el("div","files");
+          msg.files.forEach(function(n){ f.appendChild(el("span","file","📎 " + n)); });
+          d.appendChild(f);
+        }
+        if (msg.text) d.appendChild(el("div","bubble", msg.text));
+        m.appendChild(d);
+      });
+      s.appendChild(m); s.scrollTop = s.scrollHeight;
     }
+  }
 
-    function tryDemo() {
-      const question = document.getElementById("question").value.trim();
-      const result = document.getElementById("result");
+  function renderPending(){
+    var p = $("pending"); p.textContent = "";
+    pending.forEach(function(f, i){
+      var r = el("div","pfile"); r.appendChild(el("span","", (f.type.indexOf("image/")===0 ? "🖼 " : "📎 ") + f.name));
+      var x = el("button","","✕"); x.setAttribute("aria-label","Убрать файл");
+      x.onclick = function(){ pending.splice(i,1); renderPending(); updateSend(); };
+      r.appendChild(x); p.appendChild(r);
+    });
+  }
 
-      if (!question) {
-        result.style.display = "block";
-        result.textContent = "Please enter a question first.";
-        return;
-      }
+  function render(){ renderHistory(); renderMain(); renderPending(); updateSend(); }
 
-      result.style.display = "block";
-      result.textContent =
-        "Thanks for trying " + selectedTool + "! This is the first website preview. " +
-        "The AI connection is not installed yet. We will add the real AI engine in the next development stage.";
-    }
-  </script>
+  function updateSend(){ $("sendBtn").disabled = !($("input").value.trim() || pending.length); }
+  function autosize(){ var t = $("input"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 200) + "px"; }
+
+  function send(){
+    var text = $("input").value.trim();
+    if (!text && !pending.length) return;
+    var c = active(); if (!c) { newChat(); c = active(); }
+    var names = pending.map(function(f){ return f.name; });
+    c.messages.push({ role:"user", text:text, files:names });
+    if (c.title === "Новый чат") c.title = (text || names[0]).slice(0, 40);
+    c.messages.push({ role:"ai", text:"ИИ пока не подключён: это первая версия интерфейса NBSK AI. Ваше сообщение" + (names.length ? " и список файлов" : "") + " сохранено в этом чате. Настоящие ответы появятся на этапе подключения ИИ.", files:[] });
+    c.updated = Date.now();
+    $("input").value = ""; pending = []; autosize(); save(); render();
+  }
+
+  function addFiles(list){
+    Array.prototype.forEach.call(list, function(f){ pending.push({ name:f.name, type:f.type || "" }); });
+    renderPending(); updateSend();
+  }
+
+  function openMenu(){ $("side").classList.add("open"); $("shade").classList.add("show"); }
+  function closeMenu(){ $("side").classList.remove("open"); $("shade").classList.remove("show"); }
+
+  var noteTimer;
+  function soon(name){
+    var n = $("note"); n.textContent = "«" + name + "» — скоро. Этот раздел ещё не готов.";
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(function(){ n.textContent = "Первая версия интерфейса. ИИ пока не подключён."; }, 3500);
+    closeMenu();
+  }
+
+  $("newBtn").onclick = newChat;
+  $("sendBtn").onclick = send;
+  $("search").oninput = renderHistory;
+  $("burger").onclick = openMenu;
+  $("shade").onclick = closeMenu;
+  $("fileBtn").onclick = function(){ $("fileIn").click(); };
+  $("photoBtn").onclick = function(){ $("photoIn").click(); };
+  $("fileIn").onchange = function(e){ addFiles(e.target.files); e.target.value = ""; };
+  $("photoIn").onchange = function(e){ addFiles(e.target.files); e.target.value = ""; };
+  $("input").oninput = function(){ autosize(); updateSend(); };
+  $("input").onkeydown = function(e){
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-soon]"), function(b){
+    b.onclick = function(){ soon(b.getAttribute("data-soon")); };
+  });
+
+  load();
+  if (chats.length) { activeId = chats[0].id; } else { var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() }; chats.push(c); activeId = c.id; }
+  render();
+})();
+</script>
 </body>
 </html>
