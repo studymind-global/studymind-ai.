@@ -26,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid rgba(255,255,255,.55);outline-offset:2px}
 
-.side{width:288px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 12px;border-radius:26px;z-index:30;background:var(--glass);border:.5px solid var(--line);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.side{width:288px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 12px;border-radius:26px;z-index:30;background:var(--glass);border:.5px solid var(--line);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);transition:transform .3s cubic-bezier(.32,.72,0,1),width .25s ease,padding .25s ease}
 .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 6px;font-weight:700;font-size:20px;letter-spacing:-.3px}
 .brand small{font-weight:700;color:var(--accent)}
 .newchat{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 14px;border-radius:14px;background:var(--accent);font-weight:600;color:#fff;transition:transform .12s,opacity .15s}
@@ -150,7 +150,7 @@ body{padding:0;gap:0}
 .navitem+.navitem{border-top:0}
 .profile{background:none}
 .top{display:flex;padding:14px 20px;font-size:17px;font-weight:600}
-.burger{display:none}
+.burger{display:grid;place-items:center;flex:none;width:38px;height:38px;padding:0;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#fff}
 .msgs{gap:28px}
 .msg{max-width:100%}
 .msg.user{max-width:80%}
@@ -167,7 +167,7 @@ textarea{order:3;flex:1;width:auto;min-width:0;padding:9px 6px}
 .send{order:4;margin-bottom:1px}
 @media(max-width:820px){
   .side{inset:0 auto 0 0;width:min(310px,86vw)}
-  .burger{display:block}
+  .burger{display:grid}
   .top{padding:10px 14px}
 }
 .sw{position:relative}
@@ -295,6 +295,11 @@ textarea::placeholder{color:#aeb1ba;}
   .msgs{padding:22px 14px 30px;}
 }
 
+
+@media(min-width:821px){
+  .side.collapsed{width:0;min-width:0;padding-left:0;padding-right:0;border-right:0;overflow:hidden;}
+}
+
 </style>
 </head>
 <body>
@@ -333,7 +338,7 @@ textarea::placeholder{color:#aeb1ba;}
 
 <main class="main">
   <div class="top">
-    <button class="burger" id="burger" aria-label="Открыть меню">☰</button>
+    <button class="burger" id="burger" aria-label="Свернуть или открыть меню" aria-expanded="true" title="Свернуть или открыть меню"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <b>NBSK AI</b>
   </div>
 
@@ -456,8 +461,8 @@ textarea::placeholder{color:#aeb1ba;}
       d.onclick = function(){
         if (!confirm("Удалить этот чат?")) return;
         chats = chats.filter(function(x){ return x.id !== c.id; });
-        if (activeId === c.id) { activeId = chats.length ? chats[0].id : null; }
-        if (!activeId) { newChat(); return; }
+        if (activeId === c.id) { activeId = null; }
+        if (!activeId) { save(); newChat(); return; }
         save(); render();
       };
       row.appendChild(t); row.appendChild(d); box.appendChild(row);
@@ -546,8 +551,16 @@ textarea::placeholder{color:#aeb1ba;}
     renderPending(); updateSend();
   }
 
-  function openMenu(){ $("side").classList.add("open"); $("shade").classList.add("show"); }
-  function closeMenu(){ $("side").classList.remove("open"); $("shade").classList.remove("show"); }
+  function openMenu(){ $("side").classList.add("open"); $("shade").classList.add("show"); $("burger").setAttribute("aria-expanded","true"); }
+  function closeMenu(){ $("side").classList.remove("open"); $("shade").classList.remove("show"); if (window.matchMedia("(max-width: 820px)").matches) $("burger").setAttribute("aria-expanded","false"); }
+  function toggleMenu(){
+    if (window.matchMedia("(max-width: 820px)").matches) {
+      if ($("side").classList.contains("open")) closeMenu(); else openMenu();
+    } else {
+      var collapsed = $("side").classList.toggle("collapsed");
+      $("burger").setAttribute("aria-expanded", String(!collapsed));
+    }
+  }
 
   var noteTimer;
   function soon(name){
@@ -599,7 +612,7 @@ textarea::placeholder{color:#aeb1ba;}
   $("newBtn").onclick = newChat;
   $("sendBtn").onclick = send;
   $("search").oninput = renderHistory;
-  $("burger").onclick = openMenu;
+  $("burger").onclick = toggleMenu;
   $("shade").onclick = closeMenu;
   $("fileBtn").onclick = function(){ $("fileIn").click(); };
   $("photoBtn").onclick = function(){ $("photoIn").click(); };
@@ -617,8 +630,11 @@ var user = null, mode = "login";
   function boot(u){
     user = u; KEY = "nbsk_chats_v1_" + u.id; chats = []; activeId = null; pending = [];
     load();
-    if (chats.length) { activeId = chats[0].id; }
-    else { var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() }; chats.push(c); activeId = c.id; }
+    /* Не открываем старый диалог автоматически: история остаётся в меню,
+       а после входа пользователь всегда попадает на чистую главную страницу. */
+    chats = chats.filter(function(c){ return c && Array.isArray(c.messages) && c.messages.length > 0; });
+    var homeChat = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() };
+    chats.unshift(homeChat); activeId = homeChat.id; save();
     $("auth").hidden = true;
     document.querySelector(".pinfo b").textContent = u.email; document.querySelector(".pinfo b").title = u.email;
     document.querySelector(".pinfo span").textContent = "Бесплатный тариф";
