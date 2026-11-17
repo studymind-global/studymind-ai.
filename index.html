@@ -104,6 +104,31 @@ textarea::placeholder{color:var(--mute)}
 .note{text-align:center;font-size:12px;color:var(--mute);margin-top:10px}
 
 .shade{display:none}
+
+.oauth-title{display:flex;align-items:center;gap:12px;margin:18px 0 12px;color:#aeb1ba;font-size:12px}
+.oauth-title:before,.oauth-title:after{content:"";height:1px;flex:1;background:rgba(255,255,255,.13)}
+.oauth-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.oauth-btn{min-height:42px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:#25262c;color:#f4f4f6;display:flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:13px;cursor:pointer}
+.oauth-btn:hover,.connector-btn:hover{background:#32333a}
+.oauth-mark{font-weight:700;font-size:16px}
+.connector-panel{display:none;position:absolute;z-index:5;left:calc(260px + 24px);top:76px;width:min(620px,calc(100% - 300px));max-height:70vh;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(25,26,31,.97);backdrop-filter:blur(22px);box-shadow:0 18px 60px rgba(0,0,0,.35)}
+.connector-panel.open{display:block}
+.connector-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.connector-head h2{font-size:20px;margin:0}
+.connector-sub{color:#b6b8c0;font-size:13px;margin:0 0 17px}
+.connector-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.connector-item{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.035)}
+.connector-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#303139;font-weight:700}
+.connector-info{flex:1;min-width:0}
+.connector-info b{display:block;font-size:13px}
+.connector-info span{display:block;color:#aeb1ba;font-size:11px;margin-top:3px}
+.connector-btn{border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:7px 9px;background:#25262c;color:#eee;font-size:11px;cursor:pointer;white-space:nowrap}
+.panel-close{border:0;background:transparent;color:#ddd;font-size:22px;cursor:pointer}
+@media(max-width:820px){
+.connector-panel{left:12px;right:12px;top:65px;width:auto;max-height:75vh}
+.connector-grid{grid-template-columns:1fr}
+.oauth-grid{grid-template-columns:1fr}
+}
 @media(max-width:820px){
   body{padding:0;gap:0}
   .side{position:fixed;inset:10px auto 10px 10px;transform:translateX(-110%);width:min(310px,88vw)}
@@ -278,7 +303,7 @@ textarea::placeholder{color:#aeb1ba;}
 
   <div class="nav">
     <button class="navitem" data-soon="Проекты">Проекты <span class="soon">Скоро</span></button>
-    <button class="navitem" data-soon="Коннекторы">Коннекторы <span class="soon">Скоро</span></button>
+    <button class="navitem" id="connectorsBtn">Коннекторы</button>
   </div>
 
   <div class="label lrow"><span>История</span><button id="clearAll" class="clear">Очистить всё</button></div>
@@ -338,6 +363,12 @@ textarea::placeholder{color:#aeb1ba;}
       <div class="aerr" id="aerr" role="alert"></div>
       <button class="asubmit" id="asubmit" type="submit">Войти</button>
     </form>
+    <div class="oauth-title">Или продолжить через</div>
+    <div class="oauth-grid">
+      <button class="oauth-btn" type="button" data-provider="Google"><span class="oauth-mark">G</span> Google</button>
+      <button class="oauth-btn" type="button" data-provider="Apple"><span class="oauth-mark">●</span> Apple</button>
+      <button class="oauth-btn" type="button" data-provider="Facebook"><span class="oauth-mark">f</span> Facebook</button>
+    </div>
     <button class="aswitch" id="aswitch" type="button">Нет аккаунта? Зарегистрироваться</button>
     <div class="asoon">Восстановление пароля — <span>Скоро</span></div>
   </div>
@@ -347,6 +378,15 @@ textarea::placeholder{color:#aeb1ba;}
   var KEY = "nbsk_chats_v1_guest";
   var chats = [], activeId = null, pending = [];
   var $ = function(id){ return document.getElementById(id); };
+
+  $("connectorsBtn").addEventListener("click", function(){ $("connectorPanel").classList.add("open"); });
+  $("closeConnectors").addEventListener("click", function(){ $("connectorPanel").classList.remove("open"); });
+  document.querySelectorAll("[data-provider]").forEach(function(btn){
+    btn.addEventListener("click", function(){ alert("Вход через " + btn.getAttribute("data-provider") + " пока не подключён. Для запуска нужно настроить OAuth."); });
+  });
+  document.querySelectorAll("[data-integration]").forEach(function(btn){
+    btn.addEventListener("click", function(){ alert(btn.getAttribute("data-integration") + " пока не подключён. Интеграция появится после настройки доступа к сервису."); });
+  });
 
   function load(){
     try { chats = JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ chats = []; }
