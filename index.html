@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NBSK AI — Neural Core Interface</title>
+  <!-- Фирменная иконка во вкладке браузера вместо серой планеты -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%23818cf8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%23070b14'/%3E%3Ccircle cx='32' cy='32' r='18' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-dasharray='6 4'/%3E%3C/svg%3E" />
   <style>
     :root {
       --bg-deep: #070b14;
-      --bg-card: rgba(16, 24, 40, 0.68);
-      --border-glass: rgba(56, 189, 248, 0.22);
+      --bg-card: rgba(16, 24, 40, 0.72);
+      --border-glass: rgba(56, 189, 248, 0.25);
       --cyan: #38bdf8;
       --blue: #3b82f6;
       --purple: #818cf8;
@@ -30,31 +32,32 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 18px 26px;
+      padding: 18px 24px;
       overflow-x: hidden;
     }
 
-    /* Верхняя панель как на макете */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 12px;
-      z-index: 10;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-size: 20px;
       font-weight: 700;
       letter-spacing: 0.6px;
     }
 
     .logo-cube {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border: 2px solid var(--cyan);
       border-radius: 7px;
       transform: rotate(45deg);
@@ -74,50 +77,28 @@
     .user-controls {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
     }
 
-    .user-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .badge-soon {
       background: var(--bg-card);
       border: 1px solid var(--border-glass);
+      color: var(--text-muted);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 13px;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-    }
-
-    .icon-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      color: var(--text-main);
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
+      font-size: 12px;
       cursor: pointer;
-      display: grid;
-      place-items: center;
       transition: 0.2s;
     }
 
-    .icon-btn:hover {
+    .badge-soon:hover {
       border-color: var(--cyan);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+      color: #fff;
     }
 
-    /* Основная сетка дашборда (3 колонки как на фото) */
     .dashboard {
       display: grid;
-      grid-template-columns: 310px 1fr 310px;
+      grid-template-columns: 300px 1fr 300px;
       gap: 20px;
       align-items: center;
       flex: 1;
@@ -126,9 +107,12 @@
       margin: 0 auto;
     }
 
-    @media (max-width: 1100px) {
+    @media (max-width: 1050px) {
       .dashboard {
         grid-template-columns: 1fr;
+      }
+      .side-col {
+        display: none;
       }
     }
 
@@ -144,7 +128,6 @@
       gap: 12px;
     }
 
-    /* Стеклянные виджеты */
     .glass-card {
       background: var(--bg-card);
       backdrop-filter: blur(14px);
@@ -152,29 +135,24 @@
       border-radius: 14px;
       padding: 14px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      transition: 0.25s;
-    }
-
-    .glass-card:hover {
-      border-color: rgba(56, 189, 248, 0.55);
     }
 
     .card-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .hex-badge {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25));
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgba(56, 189, 248, 0.15);
       border: 1px solid rgba(56, 189, 248, 0.4);
       display: grid;
       place-items: center;
-      font-size: 16px;
+      font-size: 15px;
       flex-shrink: 0;
     }
 
@@ -189,20 +167,12 @@
       color: var(--text-muted);
     }
 
-    /* Мини-графики SVG */
     .wave-svg {
       width: 100%;
-      height: 36px;
+      height: 34px;
       stroke: var(--cyan);
       fill: rgba(56, 189, 248, 0.12);
       stroke-width: 2;
-    }
-
-    .metric-big {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--cyan);
-      margin-top: 6px;
     }
 
     .stat-line {
@@ -216,13 +186,12 @@
     .stat-line:last-child { border-bottom: none; }
     .stat-val { color: var(--cyan); font-weight: 600; }
 
-    /* Центральная сфера Neural Core Orb */
+    /* Центральная сфера Neural Core Orb и чат */
     .center-stage {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
       gap: 16px;
     }
 
@@ -232,8 +201,6 @@
       padding: 6px 16px;
       border-radius: 12px;
       text-align: center;
-      font-size: 12px;
-      z-index: 2;
     }
 
     .orb-label b { display: block; font-size: 13px; color: #fff; }
@@ -241,8 +208,8 @@
 
     .core-wrapper {
       position: relative;
-      width: 260px;
-      height: 260px;
+      width: 230px;
+      height: 230px;
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -258,7 +225,7 @@
 
     .ring-middle {
       position: absolute;
-      inset: 22px;
+      inset: 20px;
       border-radius: 50%;
       border: 3px solid transparent;
       border-top-color: var(--cyan);
@@ -268,15 +235,15 @@
 
     .ring-inner {
       position: absolute;
-      inset: 44px;
+      inset: 40px;
       border-radius: 50%;
       border: 1px solid rgba(125, 211, 252, 0.6);
       box-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
     }
 
     .core-sphere {
-      width: 125px;
-      height: 125px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #e0f2fe, #38bdf8 40%, #1d4ed8 75%, #090d16 100%);
       box-shadow:
@@ -293,27 +260,27 @@
       50% { transform: scale(1.07); }
     }
 
-    /* Встроенный интерактивный чат под сферой */
     .neural-console {
       width: 100%;
-      max-width: 520px;
-      background: rgba(10, 16, 30, 0.85);
+      max-width: 540px;
+      background: rgba(10, 16, 30, 0.9);
       border: 1px solid var(--border-glass);
       border-radius: 16px;
-      padding: 12px;
+      padding: 14px;
       backdrop-filter: blur(16px);
     }
 
     .console-log {
-      max-height: 140px;
+      max-height: 170px;
       overflow-y: auto;
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
       color: #e2e8f0;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      white-space: pre-wrap;
     }
 
     .console-msg.user {
@@ -329,12 +296,12 @@
 
     .console-input-row input {
       flex: 1;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border-glass);
       border-radius: 10px;
-      padding: 9px 12px;
+      padding: 10px 12px;
       color: #fff;
-      font-size: 13px;
+      font-size: 14px;
       outline: none;
     }
 
@@ -342,18 +309,30 @@
       border-color: var(--cyan);
     }
 
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
     .console-btn {
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       border: none;
       color: #050811;
       font-weight: 700;
-      padding: 9px 14px;
+      padding: 10px 16px;
       border-radius: 10px;
       cursor: pointer;
       font-size: 13px;
     }
 
-    /* Нижняя панель Timeline Scrubber как на фото */
     footer {
       max-width: 1440px;
       width: 100%;
@@ -395,7 +374,7 @@
     }
 
     .track-fill {
-      width: 42%;
+      width: 35%;
       height: 100%;
       background: linear-gradient(90deg, var(--cyan), var(--purple));
       border-radius: 4px;
@@ -417,7 +396,6 @@
 </head>
 <body>
 
-  <!-- Верхняя панель -->
   <header>
     <div class="logo">
       <div class="logo-cube"></div>
@@ -425,13 +403,13 @@
     </div>
 
     <div class="user-controls">
-      <div class="user-pill">
-        <span class="status-dot"></span>
-        <span>Neural Core Active</span>
-      </div>
-      <button class="icon-btn" title="Голосовой режим" onclick="startVoice()">🎤</button>
-      <button class="icon-btn" title="Загрузить файл" onclick="document.getElementById('fileUpload').click()">📎</button>
-      <input type="file" id="fileUpload" hidden onchange="alert('Файл загружен в Neural Core: ' + this.files.name)" />
+      <button class="badge-soon" onclick="alert('Регистрация и вход по email появятся на следующем этапе.')">Аккаунт • Скоро</button>
+      <button class="badge-soon" onclick="alert('Раздел Проекты для студентов — Скоро.')">Проекты • Скоро</button>
+      <button class="badge-soon" onclick="clearLog()">Очистить чат</button>
     </div>
   </header>
 
+  <section class="dashboard">
+    <!-- Левая колонка -->
+    <div class="side-col">
+      <div class="glass-card" style="width: 82%; align-self: flex-end;">
