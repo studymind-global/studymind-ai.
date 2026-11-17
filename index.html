@@ -381,7 +381,7 @@ textarea::placeholder{color:#aeb1ba;}
       <input type="file" id="fileIn" multiple hidden>
       <input type="file" id="photoIn" accept="image/*" multiple hidden>
     </div>
-    <div class="note" id="note">Первая версия интерфейса. ИИ пока не подключён.</div>
+    <div class="note" id="note">NBSK AI может ошибаться. Проверяйте важную информацию.</div>
   </div>
 </main>
 
@@ -409,7 +409,8 @@ textarea::placeholder{color:#aeb1ba;}
 <script>
 (function(){
   var KEY = "nbsk_chats_v1_guest";
-  var chats = [], activeId = null, pending = [];
+  var NOTE = "NBSK AI может ошибаться. Проверяйте важную информацию.";
+  var chats = [], activeId = null, pending = [], busy = false;
   var $ = function(id){ return document.getElementById(id); };
 
   $("connectorsBtn").addEventListener("click", function(){ $("connectorPanel").classList.add("open"); });
@@ -509,41 +510,59 @@ textarea::placeholder{color:#aeb1ba;}
   function updateSend(){ $("sendBtn").disabled = !($("input").value.trim() || pending.length); }
   function autosize(){ var t = $("input"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 200) + "px"; }
 
-  var thinkingTimer = null, thinkingStepTimer = null;
   function setThinking(on){
-    var dock = $("dock");
-    dock.classList.toggle("is-thinking", !!on);
-    if (!on) { clearTimeout(thinkingTimer); clearInterval(thinkingStepTimer); thinkingTimer = thinkingStepTimer = null; }
+    $("dock").classList.toggle("is-thinking", !!on);
   }
+
+  /* Отправка сообщения в настоящий ИИ через /api/chat */
   function send(){
+    if (busy) return;
     var text = $("input").value.trim();
-    if (!text && !pending.length) return;
+    if (!text) {
+      if (pending.length) flash("Анализ файлов пока не готов. Напишите вопрос текстом.");
+      return;
+    }
+    if (pending.length) flash("Файлы пока не анализируются, отправляю только текст.");
     var c = active(); if (!c) { newChat(); c = active(); }
     var targetId = c.id;
-    var names = pending.map(function(f){ return f.name; });
-    c.messages.push({ role:"user", text:text, files:names });
-    if (c.title === "Новый чат") c.title = (text || names[0]).slice(0, 40);
+    c.messages.push({ role:"user", text:text, files:[] });
+    if (c.title === "Новый чат") c.title = text.slice(0, 40);
     c.updated = Date.now();
-    /* Сразу сохраняем ход и поднимаем активный диалог наверх истории. */
     chats.sort(function(a,b){ return (b.updated || 0) - (a.updated || 0); });
     $("input").value = ""; pending = []; autosize(); save(); render();
-    setThinking(true);
-    var steps = ["Думаю над вашим вопросом…", "Анализирую запрос…", "Подготавливаю ответ…"], step = 0;
-    $("thinkingText").textContent = steps[0];
-    clearInterval(thinkingStepTimer);
-    thinkingStepTimer = setInterval(function(){ step = (step + 1) % steps.length; $("thinkingText").textContent = steps[step]; }, 850);
-    clearTimeout(thinkingTimer);
-    thinkingTimer = setTimeout(function(){
-      var target = chats.filter(function(x){ return x.id === targetId; })[0];
-      if (target) {
-        target.messages.push({ role:"ai", text:"ИИ пока не подключён: это первая версия интерфейса NBSK AI. Ваше сообщение" + (names.length ? " и список файлов" : "") + " сохранено в этом чате. Настоящие ответы появятся после подключения ИИ.", files:[] });
-        target.updated = Date.now();
+
+    var history = c.messages.filter(function(m){ return m.text && !m.error; }).map(function(m){
+      return { role: m.role === "user" ? "user" : "assistant", content: m.text };
+    });
+
+    busy = true; setThinking(true);
+    $("thinkingText").textContent = "Думаю над вашим вопросом…";
+
+    function addAnswer(answer, isError){
+      var t = chats.filter(function(x){ return x.id === targetId; })[0];
+      if (t) {
+        t.messages.push({ role:"ai", text:answer, files:[], error:!!isError });
+        t.updated = Date.now();
         chats.sort(function(a,b){ return (b.updated || 0) - (a.updated || 0); });
-        save(); renderHistory();
+        save();
       }
-      setThinking(false);
+    }
+
+    fetch("/api/chat", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history })
+    }).then(function(r){ return r.json().then(function(d){ return { status: r.status, d: d }; }); })
+    .then(function(res){
+      if (res.status === 401) { addAnswer("Сессия закончилась. Войдите снова.", true); showAuth(); }
+      else if (res.d && res.d.reply) addAnswer(res.d.reply, false);
+      else addAnswer((res.d && res.d.error) || "Ошибка. Попробуйте ещё раз.", true);
+    })
+    .catch(function(){ addAnswer("Нет связи с сервером. Попробуйте ещё раз.", true); })
+    .then(function(){
+      busy = false; setThinking(false);
+      renderHistory();
       if (activeId === targetId) render();
-    }, 2550);
+    });
   }
 
   function addFiles(list){
@@ -566,7 +585,7 @@ textarea::placeholder{color:#aeb1ba;}
   function soon(name){
     var n = $("note"); n.textContent = "«" + name + "» — скоро. Этот раздел ещё не готов.";
     clearTimeout(noteTimer);
-    noteTimer = setTimeout(function(){ n.textContent = "Первая версия интерфейса. ИИ пока не подключён."; }, 3500);
+    noteTimer = setTimeout(function(){ n.textContent = NOTE; }, 3500);
     closeMenu();
   }
 
@@ -575,7 +594,7 @@ textarea::placeholder{color:#aeb1ba;}
   function flash(msg){
     var n = $("note"); n.textContent = msg;
     clearTimeout(noteTimer);
-    noteTimer = setTimeout(function(){ n.textContent = "Первая версия интерфейса. ИИ пока не подключён."; }, 5000);
+    noteTimer = setTimeout(function(){ n.textContent = NOTE; }, 5000);
   }
   function voice(btn, input){
     if (!SR) { flash("Голосовой ввод не поддерживается в этом браузере. Откройте сайт в Chrome, Edge или Safari."); return; }
