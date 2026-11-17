@@ -111,7 +111,7 @@ textarea::placeholder{color:var(--mute)}
 .oauth-btn{min-height:42px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:#25262c;color:#f4f4f6;display:flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:13px;cursor:pointer}
 .oauth-btn:hover,.connector-btn:hover{background:#32333a}
 .oauth-mark{font-weight:700;font-size:16px}
-.connector-panel{display:none;position:absolute;z-index:5;left:calc(260px + 24px);top:76px;width:min(620px,calc(100% - 300px));max-height:70vh;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(25,26,31,.97);backdrop-filter:blur(22px);box-shadow:0 18px 60px rgba(0,0,0,.35)}
+.connector-panel{display:none;position:absolute;z-index:40;left:18px;top:76px;width:min(620px,calc(100% - 36px));max-height:70vh;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(25,26,31,.97);backdrop-filter:blur(22px);box-shadow:0 18px 60px rgba(0,0,0,.35)}
 .connector-panel.open{display:block}
 .connector-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
 .connector-head h2{font-size:20px;margin:0}
@@ -309,8 +309,8 @@ textarea::placeholder{color:#aeb1ba;}
   <div class="label lrow"><span>История</span><button id="clearAll" class="clear">Очистить всё</button></div>
   <div class="history" id="history"></div>
 
-  <div class="profile">
-    <div class="ava">Г</div>
+  <div class="profile" id="profile" role="button" tabindex="0" aria-label="Открыть вход или профиль">
+    <div class="ava" id="ava">Г</div>
     <div class="pinfo"><b>Гость</b><span>Не выполнен вход</span></div>
     <button class="ibtn" id="logoutBtn" aria-label="Выйти" title="Выйти"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
     <button class="ibtn" data-soon="Настройки" aria-label="Настройки">
@@ -325,6 +325,22 @@ textarea::placeholder{color:#aeb1ba;}
     <button class="burger" id="burger" aria-label="Открыть меню">☰</button>
     <b>NBSK AI</b>
   </div>
+
+  <section class="connector-panel" id="connectorPanel" aria-label="Коннекторы">
+    <div class="connector-head">
+      <h2>Коннекторы</h2>
+      <button class="panel-close" id="closeConnectors" type="button" aria-label="Закрыть">×</button>
+    </div>
+    <p class="connector-sub">Подключение внешних сервисов появится после настройки безопасной авторизации.</p>
+    <div class="connector-grid">
+      <div class="connector-item"><div class="connector-icon">G</div><div class="connector-info"><b>Google Drive</b><span>Файлы и документы</span></div><button class="connector-btn" data-integration="Google Drive" type="button">Скоро</button></div>
+      <div class="connector-item"><div class="connector-icon">▤</div><div class="connector-info"><b>Google Docs</b><span>Работа с документами</span></div><button class="connector-btn" data-integration="Google Docs" type="button">Скоро</button></div>
+      <div class="connector-item"><div class="connector-icon">✉</div><div class="connector-info"><b>Gmail</b><span>Почта Google</span></div><button class="connector-btn" data-integration="Gmail" type="button">Скоро</button></div>
+      <div class="connector-item"><div class="connector-icon">▣</div><div class="connector-info"><b>OneDrive</b><span>Облачные файлы</span></div><button class="connector-btn" data-integration="OneDrive" type="button">Скоро</button></div>
+      <div class="connector-item"><div class="connector-icon">◫</div><div class="connector-info"><b>Dropbox</b><span>Хранение файлов</span></div><button class="connector-btn" data-integration="Dropbox" type="button">Скоро</button></div>
+      <div class="connector-item"><div class="connector-icon">N</div><div class="connector-info"><b>Notion</b><span>Заметки и рабочие пространства</span></div><button class="connector-btn" data-integration="Notion" type="button">Скоро</button></div>
+    </div>
+  </section>
 
   <div class="scroll" id="scroll"></div>
 
@@ -382,10 +398,10 @@ textarea::placeholder{color:#aeb1ba;}
   $("connectorsBtn").addEventListener("click", function(){ $("connectorPanel").classList.add("open"); });
   $("closeConnectors").addEventListener("click", function(){ $("connectorPanel").classList.remove("open"); });
   document.querySelectorAll("[data-provider]").forEach(function(btn){
-    btn.addEventListener("click", function(){ alert("Вход через " + btn.getAttribute("data-provider") + " пока не подключён. Для запуска нужно настроить OAuth."); });
+    btn.addEventListener("click", function(){ $("aerr").textContent = "Вход через " + btn.getAttribute("data-provider") + " ещё не настроен. Пока используйте почту и пароль."; });
   });
   document.querySelectorAll("[data-integration]").forEach(function(btn){
-    btn.addEventListener("click", function(){ alert(btn.getAttribute("data-integration") + " пока не подключён. Интеграция появится после настройки доступа к сервису."); });
+    btn.addEventListener("click", function(){ flash("Подключение " + btn.getAttribute("data-integration") + " пока не настроено."); });
   });
 
   function load(){
@@ -597,10 +613,21 @@ var user = null, mode = "login";
     .catch(function(){ $("aerr").textContent = "Нет связи с сервером. Попробуйте ещё раз."; })
     .then(function(){ $("asubmit").disabled = false; });
   };
+  $("profile").onclick = function(e){
+    if (e.target.closest("button")) return;
+    if (!user) showAuth();
+  };
+  $("profile").onkeydown = function(e){
+    if (!user && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); showAuth(); }
+  };
   $("logoutBtn").onclick = function(){
+    if (!user) { showAuth(); return; }
     fetch("/api/logout", { method: "POST" }).catch(function(){}).then(function(){
       user = null; chats = []; activeId = null; pending = [];
       $("aemail").value = ""; $("apass").value = "";
+      document.querySelector(".pinfo b").textContent = "Гость";
+      document.querySelector(".pinfo span").textContent = "Не выполнен вход";
+      $("ava").textContent = "Г";
       showAuth();
     });
   };
