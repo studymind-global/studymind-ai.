@@ -186,6 +186,12 @@ body{background:linear-gradient(to top right,#000000 0%,#6c6c70 55%,#d2d2d6 100%
 .asoon span{color:var(--ink);background:var(--fill);padding:2px 8px;border-radius:20px;font-weight:600}
 .welcome p{color:#d0d0d5}
 .note{color:#b8b8be}
+.profile{gap:8px;padding:10px 8px;min-width:0;border-top:.5px solid var(--line);border-radius:0;margin-top:2px}
+.profile .ava{flex:none;width:36px;height:36px;border-radius:50%;font-size:15px}
+.profile .pinfo{flex:1;min-width:0}
+.profile .pinfo b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile .pinfo span{display:block;font-size:12px}
+.profile .ibtn{flex:none;width:34px;height:34px}
 </style>
 </head>
 <body>
@@ -454,7 +460,7 @@ var user = null, mode = "login";
     if (chats.length) { activeId = chats[0].id; }
     else { var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() }; chats.push(c); activeId = c.id; }
     $("auth").hidden = true;
-    document.querySelector(".pinfo b").textContent = u.email;
+    document.querySelector(".pinfo b").textContent = u.email; document.querySelector(".pinfo b").title = u.email;
     document.querySelector(".pinfo span").textContent = "Бесплатный тариф";
     document.querySelector(".ava").textContent = u.email.charAt(0).toUpperCase();
     render();
