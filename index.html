@@ -3,413 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NBSK AI — Neural Core Interface</title>
-  <!-- Фирменная иконка во вкладке браузера вместо серой планеты -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%23818cf8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%23070b14'/%3E%3Ccircle cx='32' cy='32' r='18' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-dasharray='6 4'/%3E%3C/svg%3E" />
+  <title>NBSK AI — Neural Core</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23070b14'/%3E%3Ccircle cx='32' cy='32' r='18' fill='%2338bdf8'/%3E%3C/svg%3E" />
   <style>
-    :root {
-      --bg-deep: #070b14;
-      --bg-card: rgba(16, 24, 40, 0.72);
-      --border-glass: rgba(56, 189, 248, 0.25);
-      --cyan: #38bdf8;
-      --blue: #3b82f6;
-      --purple: #818cf8;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
     body {
-      background: radial-gradient(circle at 50% 45%, #112240 0%, var(--bg-deep) 72%);
-      color: var(--text-main);
+      background: radial-gradient(circle at 50% 45%, #112240 0%, #070b14 75%);
+      color: #f1f5f9;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 18px 24px;
-      overflow-x: hidden;
+      padding: 16px 24px;
     }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 12px;
-      max-width: 1440px;
-      width: 100%;
-      margin: 0 auto;
+    header, footer {
+      max-width: 1360px; width: 100%; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+    .cube { width: 22px; height: 22px; border: 2px solid #38bdf8; border-radius: 6px; transform: rotate(45deg); }
+    .pills { display: flex; gap: 8px; }
+    .pill {
+      background: rgba(16,24,40,0.75); border: 1px solid rgba(56,189,248,0.25);
+      color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer;
     }
-
-    .logo-cube {
-      width: 26px;
-      height: 26px;
-      border: 2px solid var(--cyan);
-      border-radius: 7px;
-      transform: rotate(45deg);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+    .grid {
+      max-width: 1360px; width: 100%; margin: 16px auto;
+      display: grid; grid-template-columns: 280px 1fr 280px; gap: 20px; align-items: center;
     }
-
-    .logo-cube::after {
-      content: "";
-      width: 10px;
-      height: 10px;
-      background: var(--cyan);
-      border-radius: 2px;
+    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } .col { display: none; } }
+    .col { display: flex; flex-direction: column; gap: 14px; }
+    .card {
+      background: rgba(16,24,40,0.72); border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 14px; padding: 14px;
     }
-
-    .user-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .card h4 { font-size: 13px; margin-bottom: 4px; }
+    .card p { font-size: 11px; color: #94a3b8; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .center { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .orb-box { position: relative; width: 210px; height: 210px; display: grid; place-items: center; }
+    .ring1 { position: absolute; inset: 0; border-radius: 50%; border: 2px dashed rgba(56,189,248,0.45); animation: spin 20s linear infinite; }
+    .ring2 { position: absolute; inset: 22px; border-radius: 50%; border: 3px solid transparent; border-top-color: #38bdf8; border-bottom-color: #818cf8; animation: spinR 9s linear infinite; }
+    .sphere {
+      width: 105px; height: 105px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #e0f2fe, #38bdf8 45%, #1d4ed8 80%, #090d16);
+      box-shadow: 0 0 45px rgba(56,189,248,0.85), inset 0 0 18px #fff;
+      animation: pulse 3s ease-in-out infinite;
     }
-
-    .badge-soon {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      color: var(--text-muted);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.2s;
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spinR { 100% { transform: rotate(-360deg); } }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+    .chat {
+      width: 100%; max-width: 520px; background: rgba(10,16,30,0.9);
+      border: 1px solid rgba(56,189,248,0.25); border-radius: 16px; padding: 12px;
     }
-
-    .badge-soon:hover {
-      border-color: var(--cyan);
-      color: #fff;
+    .log {
+      max-height: 150px; overflow-y: auto; font-size: 13px; line-height: 1.45;
+      margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;
     }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: 300px 1fr 300px;
-      gap: 20px;
-      align-items: center;
-      flex: 1;
-      max-width: 1440px;
-      width: 100%;
-      margin: 0 auto;
+    .u { color: #38bdf8; align-self: flex-end; }
+    .bar { display: flex; gap: 8px; }
+    .bar input {
+      flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 10px; padding: 9px 12px; color: #fff; outline: none;
     }
-
-    @media (max-width: 1050px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-      .side-col {
-        display: none;
-      }
+    .bar button, .icon {
+      background: #38bdf8; color: #060913; border: none; border-radius: 10px;
+      padding: 9px 14px; font-weight: 700; cursor: pointer;
     }
-
-    .side-col {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .card-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .glass-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .hex-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      display: grid;
-      place-items: center;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .card-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .wave-svg {
-      width: 100%;
-      height: 34px;
-      stroke: var(--cyan);
-      fill: rgba(56, 189, 248, 0.12);
-      stroke-width: 2;
-    }
-
-    .stat-line {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .stat-line:last-child { border-bottom: none; }
-    .stat-val { color: var(--cyan); font-weight: 600; }
-
-    /* Центральная сфера Neural Core Orb и чат */
-    .center-stage {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .orb-label {
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid var(--border-glass);
-      padding: 6px 16px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .orb-label b { display: block; font-size: 13px; color: #fff; }
-    .orb-label span { color: var(--text-muted); font-size: 11px; }
-
-    .core-wrapper {
-      position: relative;
-      width: 230px;
-      height: 230px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-    }
-
-    .ring-outer {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px dashed rgba(56, 189, 248, 0.45);
-      animation: spinCW 22s linear infinite;
-    }
-
-    .ring-middle {
-      position: absolute;
-      inset: 20px;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      border-top-color: var(--cyan);
-      border-bottom-color: var(--purple);
-      animation: spinCCW 10s linear infinite;
-    }
-
-    .ring-inner {
-      position: absolute;
-      inset: 40px;
-      border-radius: 50%;
-      border: 1px solid rgba(125, 211, 252, 0.6);
-      box-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
-    }
-
-    .core-sphere {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #e0f2fe, #38bdf8 40%, #1d4ed8 75%, #090d16 100%);
-      box-shadow:
-        0 0 45px rgba(56, 189, 248, 0.8),
-        0 0 90px rgba(59, 130, 246, 0.45),
-        inset 0 0 20px #ffffff;
-      animation: corePulse 3.2s ease-in-out infinite;
-    }
-
-    @keyframes spinCW { 100% { transform: rotate(360deg); } }
-    @keyframes spinCCW { 100% { transform: rotate(-360deg); } }
-    @keyframes corePulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.07); }
-    }
-
-    .neural-console {
-      width: 100%;
-      max-width: 540px;
-      background: rgba(10, 16, 30, 0.9);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 14px;
-      backdrop-filter: blur(16px);
-    }
-
-    .console-log {
-      max-height: 170px;
-      overflow-y: auto;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #e2e8f0;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      white-space: pre-wrap;
-    }
-
-    .console-msg.user {
-      color: var(--cyan);
-      align-self: flex-end;
-    }
-
-    .console-input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .console-input-row input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-glass);
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .console-input-row input:focus {
-      border-color: var(--cyan);
-    }
-
-    .tool-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-glass);
-      color: var(--text-main);
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      font-size: 16px;
-    }
-
-    .console-btn {
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      border: none;
-      color: #050811;
-      font-weight: 700;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
+    .icon { background: rgba(255,255,255,0.06); color: #fff; border: 1px solid rgba(56,189,248,0.25); padding: 9px 11px; }
     footer {
-      max-width: 1440px;
-      width: 100%;
-      margin: 14px auto 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      padding: 10px 18px;
+      background: rgba(16,24,40,0.72); border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 14px; padding: 10px 18px; font-size: 12px; color: #94a3b8;
     }
-
-    .timeline-top {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .timeline-bar {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .play-btn {
-      background: none;
-      border: none;
-      color: var(--cyan);
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .track {
-      flex: 1;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 4px;
-      position: relative;
-    }
-
-    .track-fill {
-      width: 35%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--cyan), var(--purple));
-      border-radius: 4px;
-      position: relative;
-    }
-
-    .track-fill::after {
-      content: "";
-      position: absolute;
-      right: -5px;
-      top: -4px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 10px var(--cyan);
-    }
+    .line { flex: 1; height: 4px; background: rgba(255,255,255,0.12); border-radius: 4px; margin: 0 14px; overflow: hidden; }
+    .fill { width: 38%; height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">
-      <div class="logo-cube"></div>
-      <span>NBSK AI</span>
-    </div>
-
-    <div class="user-controls">
-      <button class="badge-soon" onclick="alert('Регистрация и вход по email появятся на следующем этапе.')">Аккаунт • Скоро</button>
-      <button class="badge-soon" onclick="alert('Раздел Проекты для студентов — Скоро.')">Проекты • Скоро</button>
-      <button class="badge-soon" onclick="clearLog()">Очистить чат</button>
+    <div class="logo"><div class="cube"></div><span>NBSK AI</span></div>
+    <div class="pills">
+      <button class="pill" onclick="alert('Вход и регистрация — Скоро')">Аккаунт • Скоро</button>
+      <button class="pill" onclick="alert('Раздел Проекты — Скоро')">Проекты • Скоро</button>
+      <button class="pill" onclick="clearChat()">Очистить чат</button>
     </div>
   </header>
 
-  <section class="dashboard">
-    <!-- Левая колонка -->
-    <div class="side-col">
-      <div class="glass-card" style="width: 82%; align-self: flex-end;">
+  <main class="grid">
+    <div class="col">
+      <div class="card"><h4>💠 Data Ingest</h4><p>Загрузка файлов и фото • Скоро</p></div>
+      <div class="row">
+        <div class="card"><h4>Synthesis</h4><p style="color:#38bdf8;font-weight:700;">Ready</p></div>
+        <div class="card"><h4>Analysis</h4><p>Контекст • Скоро</p></div>
+      </div>
+      <div class="card"><h4>🧬 Predictive Modeling</h4><p>Учебные модули • Скоро</p></div>
+    </div>
+
+    <div class="center">
+      <div class="card" style="padding:6px 16px;text-align:center;">
+        <h4>Neural Core Orb</h4><p>NBSK AI Platform</p>
+      </div>
+      <div class="orb-box">
+        <div class="ring1"></div>
+        <div class="ring2"></div>
+        <div class="sphere"></div>
+      </div>
+      <div class="chat">
+        <div class="log" id="log">
+          <div>NBSK AI: Интерфейс готов. ИИ пока не подключён — подключим после настройки базы и аккаунтов.</div>
+        </div>
+        <div class="bar">
+          <button class="icon" onclick="alert('Прикрепление файлов — Скоро')">📎</button>
+          <button class="icon" onclick="voice()">🎤</button>
+          <input id="inp" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter') send()" />
+          <button onclick="send()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card"><h4>🌐 Cloud Sync</h4><p>Синхронизация чатов • Скоро</p></div>
+      <div class="row">
+        <div class="card"><h4>Backend</h4><p style="color:#38bdf8;font-weight:700;">Online</p></div>
+        <div class="card"><h4>AI Model</h4><p>Скоро</p></div>
+      </div>
+      <div class="card"><h4>⚡ Insight Stream</h4><p>История диалогов • Скоро</p></div>
+    </div>
+  </main>
+
+  <footer>
+    <span>Timeline Scrubber</span>
+    <div class="line"><div class="fill"></div></div>
+    <span>NBSK AI</span>
+  </footer>
+
+  <script>
+    function add(t, u) {
+      const l = document.getElementById("log");
+      const d = document.createElement("div");
+      if (u) d.className = "u";
+      d.textContent = (u ? "Вы: " : "NBSK AI: ") + t;
+      l.appendChild(d);
+      l.scrollTop = l.scrollHeight;
+    }
+    function clearChat() {
+      document.getElementById("log").innerHTML = "<div>NBSK AI: Чат очищен. ИИ пока не подключён.</div>";
+    }
+    async function send() {
+      const i = document.getElementById("inp");
+      const v = i.value.trim();
+      if (!v) return;
+      add(v, true);
+      i.value = "";
+      try {
+        const r = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: v })
+        });
+        const j = await r.json();
+        add(j.reply || "ИИ пока не подключён. Подключим на следующем этапе.");
+      } catch {
+        add("ИИ пока не подключён. Подключим на следующем этапе.");
+      }
+    }
+    function voice() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return alert("Голосовой ввод не поддерживается в этом браузере.");
+      const r = new SR();
+      r.lang = "ru-RU";
+      r.onresult = e => { document.getElementById("inp").value = e.results.transcript; };
+      r.start();
+    }
+  </script>
+</body>
+</html>
