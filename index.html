@@ -403,26 +403,7 @@ textarea::placeholder{color:#aeb1ba;}
       var w = el("div","welcome");
       w.innerHTML = '<div class="orb"><i></i></div>';
       w.appendChild(el("h1","","Привет! Что учим сегодня?"));
-      w.appendChild(el("p","","Выберите предмет или задайте свой вопрос. Можно прикрепить фото задания или файл."));
-      var suggestions = [
-        ["📐", "Математика", "Разберём задачу по шагам", "Помоги решить задачу по математике и объясни каждый шаг."],
-        ["⚡", "Физика и электротехника", "Формулы и расчёты", "Помоги разобраться с задачей по физике или электротехнике."],
-        ["🌍", "Английский", "Грамматика и практика", "Помоги мне разобраться с английской грамматикой."],
-        ["💻", "Программирование", "Код и объяснения", "Объясни мне программирование на простом примере."]
-      ];
-      var grid = el("div", "cards");
-      suggestions.forEach(function(item){
-        var card = el("button", "card");
-        card.type = "button";
-        var ico = el("i", "", item[0]);
-        var content = el("div", "");
-        content.appendChild(el("b", "", item[1]));
-        content.appendChild(el("span", "", item[2]));
-        card.appendChild(ico); card.appendChild(content);
-        card.onclick = function(){ $("input").value = item[3]; autosize(); updateSend(); $("input").focus(); };
-        grid.appendChild(card);
-      });
-      w.appendChild(grid);
+      w.appendChild(el("p","","Задайте свой вопрос или прикрепите фото задания или файл."));
       s.appendChild(w);
     } else {
       var m = el("div","msgs");
