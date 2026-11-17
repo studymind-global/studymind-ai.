@@ -6,16 +6,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>NBSK AI</title>
-  <!-- Фирменная футуристичная иконка-куб во вкладке -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23050811'/%3E%3Cpolygon points='32,10 52,21 52,43 32,54 12,43 12,21' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linejoin='round'/%3E%3Cpolyline points='12,21 32,32 52,21' fill='none' stroke='%2338bdf8' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cline x1='32' y1='32' x2='32' y2='54' stroke='%2338bdf8' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <!-- Фирменный шестиугольный куб во вкладке браузера -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23060a14'/%3E%3Cpolygon points='32,10 52,21 52,43 32,54 12,43 12,21' fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linejoin='round'/%3E%3Cpolyline points='12,21 32,32 52,21' fill='none' stroke='%2338bdf8' stroke-width='3.5' stroke-linejoin='round'/%3E%3Cline x1='32' y1='32' x2='32' y2='54' stroke='%2338bdf8' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E" />
   <style>
     :root {
-      --bg: #050811;
-      --glass: rgba(22, 28, 45, 0.65);
-      --glass-solid: #111625;
-      --border: rgba(255, 255, 255, 0.1);
+      --bg: #060a14;
+      --glass: rgba(18, 26, 46, 0.68);
+      --border: rgba(56, 189, 248, 0.22);
       --cyan: #38bdf8;
-      --indigo: #818cf8;
+      --blue: #2563eb;
+      --indigo: #6366f1;
       --text: #f8fafc;
       --muted: #94a3b8;
     }
@@ -29,7 +29,7 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 25%, #0f1b38 0%, var(--bg) 65%);
+      background: radial-gradient(circle at 50% 35%, #0f2147 0%, var(--bg) 68%);
       color: var(--text);
       height: 100dvh;
       display: flex;
@@ -37,160 +37,118 @@
       overflow: hidden;
     }
 
-    /* Боковая шторка iOS */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 40;
-      display: none;
-    }
-    .overlay.show { display: block; }
-
-    .drawer {
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      width: 270px;
-      background: rgba(11, 15, 26, 0.92);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-right: 1px solid var(--border);
-      z-index: 50;
-      transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      padding: calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 18px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .drawer.open { transform: translateX(0); }
-
-    .drawer-btn {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    .drawer-btn span.tag {
-      font-size: 11px;
-      color: var(--cyan);
-      background: rgba(56, 189, 248, 0.12);
-      padding: 2px 8px;
-      border-radius: 8px;
-    }
-
-    /* Стеклянный верхний бар как в iOS */
+    /* Минималистичная шапка в стиле iOS */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: calc(env(safe-area-inset-top) + 10px) 16px 10px;
-      background: rgba(5, 8, 17, 0.7);
+      padding: calc(env(safe-area-inset-top) + 12px) 20px 12px;
+      background: rgba(6, 10, 20, 0.72);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      z-index: 20;
+      z-index: 10;
     }
 
-    .icon-circle {
-      width: 36px; height: 36px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand svg {
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+    }
+
+    .new-btn {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: transparent;
-      border: none;
+      background: var(--glass);
+      border: 1px solid var(--border);
       color: var(--text);
       display: grid;
       place-items: center;
       cursor: pointer;
-    }
-    .icon-circle:active { background: var(--glass); }
-
-    .brand-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--glass);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
+      transition: 0.2s;
     }
 
-    /* Центральная область */
+    .new-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Центральная зона */
     main {
       flex: 1;
       overflow-y: auto;
       width: 100%;
-      max-width: 720px;
+      max-width: 740px;
       margin: 0 auto;
       padding: 20px 16px;
       display: flex;
       flex-direction: column;
     }
 
-    /* Минималистичный футуристичный экран приветствия */
+    /* Центральная неоновая сфера как на фото, но в минимализме */
     .hero {
       margin: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 18px;
+      gap: 20px;
     }
 
-    .orb-wrap {
+    .orb-stage {
       position: relative;
-      width: 110px;
-      height: 110px;
+      width: 160px;
+      height: 160px;
       display: grid;
       place-items: center;
     }
 
-    .orb-ring {
+    .ring-outer {
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      border: 1.5px solid rgba(56, 189, 248, 0.35);
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
-      animation: spin 16s linear infinite;
+      border: 1.5px dashed rgba(56, 189, 248, 0.45);
+      animation: spinCW 20s linear infinite;
     }
-    .orb-ring::before {
-      content: "";
+
+    .ring-inner {
       position: absolute;
-      top: -3px; left: 50%;
-      width: 6px; height: 6px;
+      inset: 16px;
       border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
+      border: 2.5px solid transparent;
+      border-top-color: var(--cyan);
+      border-bottom-color: var(--indigo);
+      animation: spinCCW 9s linear infinite;
     }
 
-    .orb-core {
-      width: 68px;
-      height: 68px;
+    .core-sphere {
+      width: 88px;
+      height: 88px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #e0f2fe, #38bdf8 45%, #4f46e5 85%, #090d16);
-      box-shadow: 0 0 35px rgba(56, 189, 248, 0.55), inset 0 0 12px rgba(255, 255, 255, 0.8);
-      animation: breathe 3.8s ease-in-out infinite;
+      background: radial-gradient(circle at 32% 32%, #e0f2fe, #38bdf8 42%, #1d4ed8 78%, #070b14);
+      box-shadow:
+        0 0 40px rgba(56, 189, 248, 0.75),
+        0 0 80px rgba(37, 99, 235, 0.35),
+        inset 0 0 16px #ffffff;
+      animation: pulse 3.4s ease-in-out infinite;
     }
 
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    @keyframes breathe {
+    @keyframes spinCW { 100% { transform: rotate(360deg); } }
+    @keyframes spinCCW { 100% { transform: rotate(-360deg); } }
+    @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.06); }
     }
 
     .hero h1 {
-      font-size: 23px;
+      font-size: 24px;
       font-weight: 600;
       letter-spacing: -0.4px;
     }
@@ -198,12 +156,10 @@
     .hero p {
       font-size: 14px;
       color: var(--muted);
-      max-width: 300px;
-      line-height: 1.4;
     }
 
-    /* Сообщения чата в стиле iMessage / iOS */
-    .chat-list {
+    /* Чат в стиле iPhone */
+    .messages {
       display: none;
       flex-direction: column;
       gap: 14px;
@@ -212,7 +168,7 @@
 
     .msg {
       max-width: 82%;
-      padding: 11px 16px;
+      padding: 12px 16px;
       border-radius: 20px;
       font-size: 15px;
       line-height: 1.45;
@@ -221,10 +177,10 @@
 
     .msg.user {
       align-self: flex-end;
-      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      background: linear-gradient(135deg, var(--blue), var(--indigo));
       color: #fff;
       border-bottom-right-radius: 6px;
-      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.3);
     }
 
     .msg.ai {
@@ -233,45 +189,91 @@
       border: 1px solid var(--border);
       color: var(--text);
       border-bottom-left-radius: 6px;
+      backdrop-filter: blur(14px);
+    }
+
+    /* Нижняя панель с файлами и голосом */
+    footer {
+      width: 100%;
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 8px 14px calc(env(safe-area-inset-bottom) + 14px);
+    }
+
+    /* Плашка прикреплённых файлов */
+    .files-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+
+    .file-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--cyan);
       backdrop-filter: blur(12px);
     }
 
-    /* Нижняя панель ввода iPhone */
-    footer {
-      width: 100%;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 8px 14px calc(env(safe-area-inset-bottom) + 12px);
+    .file-pill button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
     }
 
-    .input-pill {
+    .composer {
       display: flex;
       align-items: flex-end;
       gap: 8px;
       background: var(--glass);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
       border: 1px solid var(--border);
       border-radius: 26px;
-      padding: 6px 8px 6px 10px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      padding: 7px 9px 7px 11px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     }
 
-    .input-pill:focus-within {
-      border-color: rgba(56, 189, 248, 0.45);
+    .composer:focus-within {
+      border-color: rgba(56, 189, 248, 0.55);
     }
 
-    .plus-btn {
-      width: 32px; height: 32px;
+    .circle-btn {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
       border: none;
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text);
-      font-size: 19px;
       display: grid;
       place-items: center;
       cursor: pointer;
       flex-shrink: 0;
+      transition: 0.2s;
+    }
+
+    .circle-btn:active {
+      transform: scale(0.92);
+    }
+
+    .circle-btn.recording {
+      background: #ef4444;
+      color: #fff;
+      animation: pulse 1s infinite;
+    }
+
+    .circle-btn.send {
+      background: var(--cyan);
+      color: #050811;
     }
 
     textarea {
@@ -281,66 +283,23 @@
       color: var(--text);
       font-size: 16px;
       line-height: 1.35;
-      max-height: 110px;
+      max-height: 120px;
       resize: none;
       outline: none;
-      padding: 5px 2px;
+      padding: 6px 4px;
     }
 
-    textarea::placeholder { color: var(--muted); }
-
-    .action-btn {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      border: none;
-      background: transparent;
+    textarea::placeholder {
       color: var(--muted);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .action-btn.send {
-      background: #ffffff;
-      color: #050811;
     }
   </style>
 </head>
 <body>
 
-  <!-- Боковое меню iOS -->
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <aside class="drawer" id="drawer">
-    <button class="drawer-btn" onclick="resetChat()">
-      <span>Новый чат</span>
-      <span>✎</span>
-    </button>
-    <button class="drawer-btn" onclick="alert('Вход и регистрация по email появятся на следующем этапе.')">
-      <span>Аккаунт</span>
-      <span class="tag">Скоро</span>
-    </button>
-    <button class="drawer-btn" onclick="alert('Раздел Проекты для студентов — Скоро.')">
-      <span>Проекты</span>
-      <span class="tag">Скоро</span>
-    </button>
-    <button class="drawer-btn" onclick="alert('Синхронизация истории в облаке — Скоро.')">
-      <span>Облачные чаты</span>
-      <span class="tag">Скоро</span>
-    </button>
-  </aside>
-
-  <!-- Стеклянная шапка -->
+  <!-- Чистая шапка как в iPhone -->
   <header>
-    <button class="icon-circle" onclick="toggleMenu()" aria-label="Меню">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="4" y1="8" x2="20" y2="8"></line>
-        <line x1="4" y1="16" x2="15" y2="16"></line>
-      </svg>
-    </button>
-
-    <div class="brand-pill">
-      <svg width="18" height="18" viewBox="0 0 64 64">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 64 64">
         <polygon points="32,6 56,20 56,44 32,58 8,44 8,20" fill="rgba(56,189,248,0.15)" stroke="#38bdf8" stroke-width="4.5" stroke-linejoin="round"/>
         <polyline points="8,20 32,34 56,20" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/>
         <line x1="32" y1="34" x2="32" y2="58" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
@@ -348,4 +307,44 @@
       <span>NBSK AI</span>
     </div>
 
-    <button class="icon-circle" onclick="resetChat()" aria-label="Новый чат">
+    <button class="new-btn" onclick="resetChat()" title="Новый чат">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Центральная сфера и диалог -->
+  <main id="scrollArea">
+    <div class="hero" id="hero">
+      <div class="orb-stage">
+        <div class="ring-outer"></div>
+        <div class="ring-inner"></div>
+        <div class="core-sphere"></div>
+      </div>
+      <h1>Чем я могу помочь?</h1>
+      <p>Модуль ИИ — Скоро</p>
+    </div>
+
+    <div class="messages" id="messages"></div>
+  </main>
+
+  <!-- Панель ввода с управлением файлами и голосовым помощником -->
+  <footer>
+    <div class="files-bar" id="filesBar"></div>
+
+    <div class="composer">
+      <!-- Управление файлами -->
+      <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.txt" hidden onchange="handleFiles(event)" />
+      <button class="circle-btn" onclick="document.getElementById('fileInput').click()" title="Прикрепить файлы или фото">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+        </svg>
+      </button>
+
+      <textarea id="msgInput" rows="1" placeholder="Спросите NBSK AI..." oninput="onInput(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
+
+      <!-- Голосовой помощник -->
+      <button class="circle-btn" id="micBtn" onclick="toggleVoice()" title="Голосовой помощник">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
