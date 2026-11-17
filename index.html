@@ -169,6 +169,23 @@ body{background:linear-gradient(to top right,#000000 0%,#6c6c70 55%,#d2d2d6 100%
 .brand{gap:12px;font-size:22px;font-weight:800;letter-spacing:-.4px;color:#fff}
 .brand .cube{filter:drop-shadow(0 0 6px rgba(255,255,255,.28))}
 .brand small{font-weight:300;color:#fff;letter-spacing:0}
+.auth{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(to top right,#000 0%,#4a4a4e 60%,#9a9a9e 100%)}
+.auth[hidden]{display:none}
+.acard{width:100%;max-width:390px;background:var(--surface);border:.5px solid var(--line);border-radius:26px;padding:28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.acard .brand{justify-content:center;padding:0 0 14px}
+.acard h2{text-align:center;font-size:22px;letter-spacing:-.4px;margin-bottom:6px}
+.asub{text-align:center;color:var(--mute);font-size:14px;line-height:1.5;margin-bottom:14px}
+.acard input{width:100%;padding:13px 14px;border-radius:12px;background:var(--fill);border:1px solid transparent;color:var(--ink);font:inherit;font-size:16px;margin-top:10px;outline:none}
+.acard input:focus{border-color:rgba(255,255,255,.55)}
+.aerr{min-height:20px;margin:10px 2px 4px;color:#ff6b6b;font-size:13px}
+.asubmit{width:100%;padding:13px;border-radius:12px;background:var(--accent);color:#111;font-weight:700;font-size:16px}
+.asubmit:disabled{opacity:.5;cursor:default}
+.aswitch{display:block;width:100%;margin-top:14px;color:var(--mute);font-size:14px}
+.aswitch:hover{color:var(--ink)}
+.asoon{text-align:center;margin-top:10px;font-size:12px;color:var(--mute)}
+.asoon span{color:var(--ink);background:var(--fill);padding:2px 8px;border-radius:20px;font-weight:600}
+.welcome p{color:#d0d0d5}
+.note{color:#b8b8be}
 </style>
 </head>
 <body>
@@ -196,7 +213,8 @@ body{background:linear-gradient(to top right,#000000 0%,#6c6c70 55%,#d2d2d6 100%
 
   <div class="profile">
     <div class="ava">Г</div>
-    <div class="pinfo"><b>Гость</b><span>Вход появится скоро</span></div>
+    <div class="pinfo"><b>Гость</b><span>Не выполнен вход</span></div>
+    <button class="ibtn" id="logoutBtn" aria-label="Выйти" title="Выйти"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
     <button class="ibtn" data-soon="Настройки" aria-label="Настройки">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
     </button>
@@ -236,9 +254,24 @@ body{background:linear-gradient(to top right,#000000 0%,#6c6c70 55%,#d2d2d6 100%
   </div>
 </main>
 
+<div class="auth" id="auth" hidden>
+  <div class="acard">
+    <div class="brand" id="abrand"></div>
+    <h2 id="atitle">Вход в NBSK AI</h2>
+    <p class="asub">Чтобы пользоваться NBSK AI, войдите или создайте аккаунт.</p>
+    <form id="aform" novalidate>
+      <input id="aemail" type="email" placeholder="Электронная почта" autocomplete="email" aria-label="Электронная почта">
+      <input id="apass" type="password" placeholder="Пароль (минимум 8 символов)" autocomplete="current-password" aria-label="Пароль">
+      <div class="aerr" id="aerr" role="alert"></div>
+      <button class="asubmit" id="asubmit" type="submit">Войти</button>
+    </form>
+    <button class="aswitch" id="aswitch" type="button">Нет аккаунта? Зарегистрироваться</button>
+    <div class="asoon">Восстановление пароля — <span>Скоро</span></div>
+  </div>
+</div>
 <script>
 (function(){
-  var KEY = "nbsk_chats_v1";
+  var KEY = "nbsk_chats_v1_guest";
   var chats = [], activeId = null, pending = [];
   var $ = function(id){ return document.getElementById(id); };
 
@@ -414,9 +447,53 @@ body{background:linear-gradient(to top right,#000000 0%,#6c6c70 55%,#d2d2d6 100%
     b.onclick = function(){ soon(b.getAttribute("data-soon")); };
   });
 
-  load();
-  if (chats.length) { activeId = chats[0].id; } else { var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() }; chats.push(c); activeId = c.id; }
-  render();
+var user = null, mode = "login";
+  function boot(u){
+    user = u; KEY = "nbsk_chats_v1_" + u.id; chats = []; activeId = null; pending = [];
+    load();
+    if (chats.length) { activeId = chats[0].id; }
+    else { var c = { id: uid(), title: "Новый чат", messages: [], updated: Date.now() }; chats.push(c); activeId = c.id; }
+    $("auth").hidden = true;
+    document.querySelector(".pinfo b").textContent = u.email;
+    document.querySelector(".pinfo span").textContent = "Бесплатный тариф";
+    document.querySelector(".ava").textContent = u.email.charAt(0).toUpperCase();
+    render();
+  }
+  function showAuth(){ $("auth").hidden = false; setMode("login"); }
+  function setMode(m){
+    mode = m;
+    $("atitle").textContent = m === "login" ? "Вход в NBSK AI" : "Создать аккаунт";
+    $("asubmit").textContent = m === "login" ? "Войти" : "Зарегистрироваться";
+    $("aswitch").textContent = m === "login" ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти";
+    $("apass").autocomplete = m === "login" ? "current-password" : "new-password";
+    $("aerr").textContent = "";
+  }
+  $("abrand").innerHTML = document.querySelector(".side .brand").innerHTML;
+  $("aswitch").onclick = function(){ setMode(mode === "login" ? "register" : "login"); };
+  $("aform").onsubmit = function(e){
+    e.preventDefault();
+    $("aerr").textContent = ""; $("asubmit").disabled = true;
+    fetch("/api/" + (mode === "login" ? "login" : "register"), {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: $("aemail").value, password: $("apass").value })
+    }).then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+    .then(function(res){
+      if (res.ok && res.d.user) { $("apass").value = ""; boot(res.d.user); }
+      else { $("aerr").textContent = res.d.error || "Ошибка. Попробуйте ещё раз."; }
+    })
+    .catch(function(){ $("aerr").textContent = "Нет связи с сервером. Попробуйте ещё раз."; })
+    .then(function(){ $("asubmit").disabled = false; });
+  };
+  $("logoutBtn").onclick = function(){
+    fetch("/api/logout", { method: "POST" }).catch(function(){}).then(function(){
+      user = null; chats = []; activeId = null; pending = [];
+      $("aemail").value = ""; $("apass").value = "";
+      showAuth();
+    });
+  };
+  fetch("/api/me").then(function(r){ return r.json(); })
+    .then(function(d){ if (d && d.user) boot(d.user); else showAuth(); })
+    .catch(function(){ showAuth(); });
 })();
 </script>
 </body>
