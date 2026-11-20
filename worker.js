@@ -163,15 +163,14 @@ export default {
       }
 
       try {
-        const out = await env.AI.run(AI_MODEL, {
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-          max_tokens: 1024,
-        });
-        return reply({ reply: out.response || "" });
-      } catch (e) {
-        console.error("AI error:", e && e.message);
-        return reply({ error: "ИИ временно недоступен. Попробуйте позже." }, 502);
-      }
+       const out = await env.AI.run(AI_MODEL, {
+  messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+  max_tokens: 1024,
+});
+
+console.log("AI RAW RESPONSE:", JSON.stringify(out, null, 2));
+
+return reply({ reply: out.response || "" });
     }
 
     return reply({ error: "Not found" }, 404);
