@@ -186,12 +186,6 @@ export default {
           e?.stack || e?.message || String(e)
         );
 
-        return reply({
-          error: e?.message || String(e)
-        }, 500);
-      }
-    }
-
-    return reply({ error: "Not found" }, 404);
-  },
-};
+       return reply({
+  debug: out
+});
