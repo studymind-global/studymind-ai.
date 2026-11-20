@@ -162,15 +162,34 @@ export default {
         return reply({ error: "Нужно хотя бы одно сообщение пользователя" }, 400);
       }
 
-      try {
-       const out = await env.AI.run(AI_MODEL, {
-  messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-  max_tokens: 1024,
-});
+          try {
+        const out = await env.AI.run(AI_MODEL, {
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...messages,
+          ],
+          max_tokens: 1024,
+        });
 
-console.log("AI RAW RESPONSE:", JSON.stringify(out, null, 2));
+        console.log(
+          "AI RAW RESPONSE:",
+          JSON.stringify(out, null, 2)
+        );
 
-return reply({ reply: out.response || "" });
+        return reply({
+          reply: out?.response || ""
+        });
+
+      } catch (e) {
+        console.error(
+          "AI ERROR:",
+          e?.stack || e?.message || String(e)
+        );
+
+        return reply({
+          error: e?.message || String(e)
+        }, 500);
+      }
     }
 
     return reply({ error: "Not found" }, 404);
