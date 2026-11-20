@@ -1,9 +1,9 @@
-
 const enc = new TextEncoder();
 const ITER = 100000;
 const DAY = 86400;
 
-const AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+const AI_MODEL = "@cf/openai/gpt-oss-120b";
+const FALLBACK_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 const SYSTEM_PROMPT =
   "Ты — NBSK AI, дружелюбный образовательный помощник. Помогаешь с учёбой: объясняешь темы просто, решаешь задачи пошагово. Отвечай на языке пользователя.";
@@ -151,6 +151,21 @@ async function readBody(request) {
 function extractText(out) {
   if (typeof out === "string") return out.trim();
   if (!out || typeof out !== "object") return "";
+
+  // Формат "Responses": output = [ {type:"reasoning"...}, {type:"message", content:[{text:"..."}]} ]
+  // Берём только готовый ответ (message), без блока размышлений.
+  if (Array.isArray(out.output)) {
+    const parts = [];
+    for (const item of out.output) {
+      if (item && item.type === "message" && Array.isArray(item.content)) {
+        for (const c of item.content) {
+          if (c && typeof c.text === "string") parts.push(c.text);
+        }
+      }
+    }
+    const joined = parts.join("").trim();
+    if (joined) return joined;
+  }
 
   const candidates = [
     out.response,
@@ -431,15 +446,32 @@ export default {
           guest.remaining = Math.max(0, 10 - Number(used.requests));
         }
 
-        const out = await env.AI.run(AI_MODEL, {
+        const aiInput = {
           messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-          max_tokens: 1024,
-        });
+          max_tokens: 2048,
+        };
 
-        const text = extractText(out);
+        let usedModel = AI_MODEL;
+        let out = null;
+        let text = "";
+
+        // Сначала пробуем основную (умную) модель.
+        try {
+          out = await env.AI.run(AI_MODEL, aiInput);
+          text = extractText(out);
+        } catch (e) {
+          console.error("PRIMARY MODEL error:", String(e?.message || e).slice(0, 500));
+        }
+
+        // Если не получилось — запасная модель, чтобы чат не ломался.
+        if (!text) {
+          usedModel = FALLBACK_MODEL;
+          out = await env.AI.run(FALLBACK_MODEL, aiInput);
+          text = extractText(out);
+        }
 
         console.log("AI result structure:", JSON.stringify({
-          model: AI_MODEL,
+          model: usedModel,
           resultType: typeof out,
           keys: out && typeof out === "object" ? Object.keys(out) : [],
           responseType: typeof out?.response,
@@ -456,7 +488,7 @@ export default {
 
         return reply({
           reply: text,
-          model: AI_MODEL,
+          model: usedModel,
           ...(guest ? { remaining: guest.remaining, guest: true } : {})
         }, 200, guest?.cookie);
       } catch (e) {
