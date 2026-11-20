@@ -2,7 +2,7 @@ const enc = new TextEncoder();
 const ITER = 100000;
 const DAY = 86400;
 
-const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const AI_MODEL = "@cf/zai-org/glm-4.7-flash";
 const SYSTEM_PROMPT =
   "Ты — NBSK AI, дружелюбный образовательный помощник. Помогаешь с учёбой: объясняешь темы просто, решаешь задачи пошагово. Отвечай на языке пользователя.";
 
