@@ -4,9 +4,14 @@ const DAY = 86400;
 
 const AI_MODEL = "@cf/openai/gpt-oss-120b";
 const FALLBACK_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+// Модели, которые умеют смотреть на картинки. Пробуются по очереди.
+const VISION_MODELS = [
+  "@cf/meta/llama-4-scout-17b-16e-instruct",
+  "@cf/google/gemma-4-26b-a4b-it"
+];
 
 const SYSTEM_PROMPT =
-  "Ты — NBSK AI, дружелюбный образовательный помощник. Помогаешь с учёбой: объясняешь темы просто, решаешь задачи пошагово. Отвечай на языке пользователя.";
+  "Ты — NBSK AI, дружелюбный образовательный помощник. Помогаешь с учёбой: объясняешь темы просто, решаешь задачи пошагово. Отвечай на языке пользователя. Если пользователь прикрепил фото или текст файла, опирайся на них.";
 
 const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
 const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -194,6 +199,7 @@ function extractText(out) {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const IMAGE_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 
 export default {
   async fetch(request, env) {
@@ -424,11 +430,20 @@ export default {
         const messages = raw
           .slice(-20)
           .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
-          .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
+          .map((m) => ({
+            role: m.role,
+            content: m.content.slice(0, m.role === "user" ? 60000 : 8000)
+          }));
 
         if (!messages.length || messages[messages.length - 1].role !== "user") {
           return reply({ error: "Нужно хотя бы одно сообщение пользователя" }, 400);
         }
+
+        // Фото: до 3 штук, только jpeg/png/webp в виде data URL, до ~2.5 МБ каждое.
+        const rawImages = Array.isArray(body.images) ? body.images : [];
+        const images = rawImages
+          .slice(0, 3)
+          .filter((u) => typeof u === "string" && u.length < 2500000 && IMAGE_RE.test(u));
 
         if (guest) {
           const used = await env.DB.prepare(
@@ -446,44 +461,76 @@ export default {
           guest.remaining = Math.max(0, 10 - Number(used.requests));
         }
 
-        const aiInput = {
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-          max_tokens: 2048,
-        };
-
-        let usedModel = AI_MODEL;
+        let usedModel = "";
         let out = null;
         let text = "";
 
-        // Сначала пробуем основную (умную) модель.
-        try {
-          out = await env.AI.run(AI_MODEL, aiInput);
-          text = extractText(out);
-        } catch (e) {
-          console.error("PRIMARY MODEL error:", String(e?.message || e).slice(0, 500));
-        }
+        if (images.length) {
+          // Есть фото: используем модель, которая умеет смотреть на картинки.
+          const last = messages[messages.length - 1];
+          const visionMessages = [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...messages.slice(0, -1),
+            {
+              role: "user",
+              content: [
+                { type: "text", text: last.content },
+                ...images.map((u) => ({ type: "image_url", image_url: { url: u } }))
+              ]
+            }
+          ];
 
-        // Если не получилось — запасная модель, чтобы чат не ломался.
-        if (!text) {
-          usedModel = FALLBACK_MODEL;
-          out = await env.AI.run(FALLBACK_MODEL, aiInput);
-          text = extractText(out);
+          for (const model of VISION_MODELS) {
+            try {
+              out = await env.AI.run(model, { messages: visionMessages, max_tokens: 2048 });
+              text = extractText(out);
+              if (text) { usedModel = model; break; }
+            } catch (e) {
+              console.error("VISION MODEL error:", model, String(e?.message || e).slice(0, 500));
+            }
+          }
+
+          if (!text) {
+            return reply({
+              error: "Не удалось разобрать фото. Попробуйте сделать снимок чётче или напишите задание текстом."
+            }, 502, guest?.cookie);
+          }
+        } else {
+          const aiInput = {
+            messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+            max_tokens: 2048,
+          };
+
+          usedModel = AI_MODEL;
+
+          // Сначала пробуем основную (умную) модель.
+          try {
+            out = await env.AI.run(AI_MODEL, aiInput);
+            text = extractText(out);
+          } catch (e) {
+            console.error("PRIMARY MODEL error:", String(e?.message || e).slice(0, 500));
+          }
+
+          // Если не получилось — запасная модель, чтобы чат не ломался.
+          if (!text) {
+            usedModel = FALLBACK_MODEL;
+            out = await env.AI.run(FALLBACK_MODEL, aiInput);
+            text = extractText(out);
+          }
         }
 
         console.log("AI result structure:", JSON.stringify({
           model: usedModel,
+          images: images.length,
           resultType: typeof out,
           keys: out && typeof out === "object" ? Object.keys(out) : [],
-          responseType: typeof out?.response,
-          resultKeys: out?.result && typeof out.result === "object" ? Object.keys(out.result) : [],
-          choicesType: typeof out?.choices,
         }));
 
         if (!text) {
           console.error("AI returned no extractable text");
           return reply({
             error: "Модель вернула ответ в неизвестном формате. Проверьте Cloudflare Logs.",
-          }, 502);
+          }, 502, guest?.cookie);
         }
 
         return reply({
