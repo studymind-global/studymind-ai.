@@ -2,6 +2,7 @@
 const enc = new TextEncoder();
 const ITER = 100000;
 const DAY = 86400;
+
 const AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 const SYSTEM_PROMPT =
@@ -46,10 +47,7 @@ async function sha256Hex(text) {
 }
 
 function reply(data, status = 200, cookie) {
-  const h = new Headers({
-    "Content-Type": "application/json; charset=utf-8",
-    "Cache-Control": "no-store"
-  });
+  const h = new Headers({ "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
   if (cookie) h.append("Set-Cookie", cookie);
   return new Response(JSON.stringify(data), { status, headers: h });
 }
@@ -67,9 +65,7 @@ function readCookie(request, name) {
   return null;
 }
 
-function readToken(request) {
-  return readCookie(request, "nbsk_session");
-}
+function readToken(request) { return readCookie(request, "nbsk_session"); }
 
 function guestCookie(token, maxAge = 60 * 60 * 24 * 365) {
   return `nbsk_guest=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
@@ -78,17 +74,14 @@ function guestCookie(token, maxAge = 60 * 60 * 24 * 365) {
 async function getGuest(request, env) {
   let token = readCookie(request, "nbsk_guest");
   let fresh = false;
-
   if (!token || !/^[a-f0-9-]{36}$/i.test(token)) {
     token = crypto.randomUUID();
     fresh = true;
   }
-
   const hash = await sha256Hex(token);
   const row = await env.DB.prepare(
     "SELECT requests FROM guest_usage WHERE guest_hash = ?"
   ).bind(hash).first();
-
   return {
     hash,
     remaining: Math.max(0, 10 - Number(row?.requests || 0)),
@@ -99,10 +92,8 @@ async function getGuest(request, env) {
 async function currentUser(request, env) {
   const token = readToken(request);
   if (!token) return null;
-
   const th = await sha256Hex(token);
   const now = Math.floor(Date.now() / 1000);
-
   return await env.DB.prepare(
     "SELECT u.id, u.email, u.plan FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?"
   ).bind(th, now).first();
@@ -111,12 +102,38 @@ async function currentUser(request, env) {
 async function startSession(env, userId) {
   const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
   const now = Math.floor(Date.now() / 1000);
-
   await env.DB.prepare(
     "INSERT INTO sessions (token_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)"
   ).bind(await sha256Hex(token), userId, now + 30 * DAY, now).run();
-
   return sessionCookie(token, 30 * DAY);
+}
+
+async function sendPasswordResetEmail(env, email, token) {
+  if (!env.RESEND_API_KEY || !env.MAIL_FROM || !env.APP_URL) {
+    throw new Error("Не настроена отправка писем: нужны RESEND_API_KEY, MAIL_FROM и APP_URL");
+  }
+
+  const resetUrl = `${String(env.APP_URL).replace(/\/$/, "")}/?reset=${encodeURIComponent(token)}`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from: env.MAIL_FROM,
+      to: [email],
+      subject: "Восстановление пароля NBSK AI",
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#222"><h2>Восстановление пароля NBSK AI</h2><p>Вы запросили смену пароля. Нажмите кнопку ниже, чтобы задать новый пароль.</p><p><a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#17181c;color:#fff;text-decoration:none;border-radius:8px">Создать новый пароль</a></p><p>Ссылка действует 60 минут. Если вы не запрашивали восстановление, просто проигнорируйте это письмо.</p></div>`
+    })
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error("RESEND error:", response.status, details.slice(0, 500));
+    throw new Error("Почтовый сервис не отправил письмо");
+  }
 }
 
 async function readBody(request) {
@@ -124,7 +141,7 @@ async function readBody(request) {
     const b = await request.json();
     return {
       email: String(b.email || "").trim().toLowerCase(),
-      password: String(b.password || "")
+      password: String(b.password || ""),
     };
   } catch {
     return null;
@@ -143,7 +160,7 @@ function extractText(out) {
     out.result?.output_text,
     out.result?.content,
     out.choices?.[0]?.message?.content,
-    out.choices?.[0]?.text
+    out.choices?.[0]?.text,
   ];
 
   for (const value of candidates) {
@@ -154,7 +171,6 @@ function extractText(out) {
         .map((item) => typeof item === "string" ? item : item?.text || "")
         .join("")
         .trim();
-
       if (joined) return joined;
     }
   }
@@ -171,22 +187,14 @@ export default {
 
     if (!path.startsWith("/api/")) return env.ASSETS.fetch(request);
 
-    if (path === "/api/health") {
-      return reply({ ok: true, service: "NBSK AI" });
-    }
+    if (path === "/api/health") return reply({ ok: true, service: "NBSK AI" });
 
     if (path === "/api/guest-status" && request.method === "GET") {
       try {
         const user = await currentUser(request, env);
         if (user) return reply({ authenticated: true, remaining: 10 });
-
         const guest = await getGuest(request, env);
-
-        return reply({
-          authenticated: false,
-          remaining: guest.remaining,
-          limit: 10
-        }, 200, guest.cookie);
+        return reply({ authenticated: false, remaining: guest.remaining, limit: 10 }, 200, guest.cookie);
       } catch (e) {
         console.error("GUEST STATUS error:", e?.message || e);
         return reply({ error: "Не удалось проверить гостевой лимит" }, 500);
@@ -205,14 +213,9 @@ export default {
 
     if (path === "/api/register" && request.method === "POST") {
       const b = await readBody(request);
-
       if (!b) return reply({ error: "Некорректный запрос" }, 400);
-      if (!EMAIL_RE.test(b.email) || b.email.length > 254) {
-        return reply({ error: "Введите настоящую почту" }, 400);
-      }
-      if (b.password.length < 8 || b.password.length > 200) {
-        return reply({ error: "Пароль: от 8 до 200 символов" }, 400);
-      }
+      if (!EMAIL_RE.test(b.email) || b.email.length > 254) return reply({ error: "Введите настоящую почту" }, 400);
+      if (b.password.length < 8 || b.password.length > 200) return reply({ error: "Пароль: от 8 до 200 символов" }, 400);
 
       const id = crypto.randomUUID();
 
@@ -222,16 +225,12 @@ export default {
         ).bind(id, b.email, await makeHash(b.password), Math.floor(Date.now() / 1000)).run();
       } catch (e) {
         console.error("REGISTER error:", e?.message || e);
-        return reply({
-          error: "Эта почта уже зарегистрирована или регистрация временно недоступна"
-        }, 409);
+        return reply({ error: "Эта почта уже зарегистрирована или регистрация временно недоступна" }, 409);
       }
 
       try {
         const cookie = await startSession(env, id);
-        return reply({
-          user: { id, email: b.email, plan: "free" }
-        }, 201, cookie);
+        return reply({ user: { id, email: b.email, plan: "free" } }, 201, cookie);
       } catch (e) {
         console.error("SESSION error:", e?.message || e);
         return reply({ error: "Аккаунт создан, но не удалось начать сессию" }, 500);
@@ -240,11 +239,8 @@ export default {
 
     if (path === "/api/login" && request.method === "POST") {
       const b = await readBody(request);
-
       if (!b) return reply({ error: "Некорректный запрос" }, 400);
-      if (!b.email || !b.password) {
-        return reply({ error: "Введите почту и пароль" }, 400);
-      }
+      if (!b.email || !b.password) return reply({ error: "Введите почту и пароль" }, 400);
 
       try {
         const user = await env.DB.prepare(
@@ -256,25 +252,127 @@ export default {
         }
 
         const cookie = await startSession(env, user.id);
-
-        return reply({
-          user: { id: user.id, email: user.email, plan: user.plan }
-        }, 200, cookie);
+        return reply({ user: { id: user.id, email: user.email, plan: user.plan } }, 200, cookie);
       } catch (e) {
         console.error("LOGIN error:", e?.message || e);
         return reply({ error: "Ошибка входа. Проверьте настройки базы данных" }, 500);
       }
     }
 
+    if (path === "/api/forgot-password" && request.method === "POST") {
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return reply({ error: "Некорректный запрос" }, 400);
+      }
+
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!EMAIL_RE.test(email) || email.length > 254) {
+        return reply({ error: "Введите корректную почту" }, 400);
+      }
+
+      try {
+        const user = await env.DB.prepare(
+          "SELECT id, email FROM users WHERE email = ?"
+        ).bind(email).first();
+
+        // Одинаковый ответ для существующих и неизвестных адресов.
+        if (user) {
+          const token = [...crypto.getRandomValues(new Uint8Array(32))]
+            .map(x => x.toString(16).padStart(2, "0")).join("");
+          const tokenHash = await sha256Hex(token);
+          const now = Math.floor(Date.now() / 1000);
+
+          await env.DB.prepare(
+            "DELETE FROM password_resets WHERE user_id = ? OR expires_at < ?"
+          ).bind(user.id, now).run();
+
+          await env.DB.prepare(
+            "INSERT INTO password_resets (token_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)"
+          ).bind(tokenHash, user.id, now + 3600, now).run();
+
+          try {
+            await sendPasswordResetEmail(env, user.email, token);
+          } catch (e) {
+            await env.DB.prepare(
+              "DELETE FROM password_resets WHERE token_hash = ?"
+            ).bind(tokenHash).run();
+
+            console.error("FORGOT EMAIL error:", e?.message || e);
+            return reply({ error: "Не удалось отправить письмо. Проверьте настройки почтового сервиса." }, 503);
+          }
+        }
+
+        return reply({
+          ok: true,
+          message: "Если аккаунт с такой почтой существует, письмо для восстановления уже отправлено."
+        });
+      } catch (e) {
+        console.error("FORGOT error:", e?.message || e);
+        return reply({ error: "Не удалось обработать запрос. Попробуйте позже." }, 500);
+      }
+    }
+
+    if (path === "/api/reset-password" && request.method === "POST") {
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return reply({ error: "Некорректный запрос" }, 400);
+      }
+
+      const token = String(body.token || "");
+      const password = String(body.password || "");
+
+      if (!/^[a-f0-9]{64}$/i.test(token)) {
+        return reply({ error: "Ссылка восстановления недействительна или устарела" }, 400);
+      }
+      if (password.length < 8 || password.length > 200) {
+        return reply({ error: "Пароль должен содержать от 8 до 200 символов" }, 400);
+      }
+
+      try {
+        const tokenHash = await sha256Hex(token);
+        const now = Math.floor(Date.now() / 1000);
+
+        const reset = await env.DB.prepare(
+          "SELECT user_id FROM password_resets WHERE token_hash = ? AND expires_at > ?"
+        ).bind(tokenHash, now).first();
+
+        if (!reset) {
+          return reply({ error: "Ссылка восстановления недействительна или устарела" }, 400);
+        }
+
+        await env.DB.prepare(
+          "UPDATE users SET password_hash = ? WHERE id = ?"
+        ).bind(await makeHash(password), reset.user_id).run();
+
+        await env.DB.prepare(
+          "DELETE FROM password_resets WHERE user_id = ?"
+        ).bind(reset.user_id).run();
+
+        await env.DB.prepare(
+          "DELETE FROM sessions WHERE user_id = ?"
+        ).bind(reset.user_id).run();
+
+        return reply({
+          ok: true,
+          message: "Пароль успешно изменён. Теперь войдите с новым паролем."
+        }, 200, sessionCookie("", 0));
+      } catch (e) {
+        console.error("RESET PASSWORD error:", e?.message || e);
+        return reply({ error: "Не удалось изменить пароль. Попробуйте ещё раз." }, 500);
+      }
+    }
+
     if (path === "/api/logout" && request.method === "POST") {
       try {
         const token = readToken(request);
-
         if (token) {
           await env.DB.prepare("DELETE FROM sessions WHERE token_hash = ?")
             .bind(await sha256Hex(token)).run();
         }
-
         return reply({ ok: true }, 200, sessionCookie("", 0));
       } catch (e) {
         console.error("LOGOUT error:", e?.message || e);
@@ -289,7 +387,6 @@ export default {
 
         if (!user) {
           guest = await getGuest(request, env);
-
           if (guest.remaining <= 0) {
             return reply({
               error: "Бесплатные 10 запросов закончились. Войдите или зарегистрируйтесь, чтобы продолжить.",
@@ -299,12 +396,9 @@ export default {
           }
         }
 
-        if (!env.AI) {
-          return reply({ error: "Привязка AI не подключена к Worker" }, 500, guest?.cookie);
-        }
+        if (!env.AI) return reply({ error: "Привязка AI не подключена к Worker" }, 500, guest?.cookie);
 
         let body;
-
         try {
           body = await request.json();
         } catch {
@@ -312,7 +406,6 @@ export default {
         }
 
         const raw = Array.isArray(body.messages) ? body.messages : [];
-
         const messages = raw
           .slice(-20)
           .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
@@ -339,11 +432,8 @@ export default {
         }
 
         const out = await env.AI.run(AI_MODEL, {
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...messages
-          ],
-          max_tokens: 1024
+          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+          max_tokens: 1024,
         });
 
         const text = extractText(out);
@@ -354,13 +444,13 @@ export default {
           keys: out && typeof out === "object" ? Object.keys(out) : [],
           responseType: typeof out?.response,
           resultKeys: out?.result && typeof out.result === "object" ? Object.keys(out.result) : [],
-          choicesType: typeof out?.choices
+          choicesType: typeof out?.choices,
         }));
 
         if (!text) {
           console.error("AI returned no extractable text");
           return reply({
-            error: "Модель вернула ответ в неизвестном формате. Проверьте Cloudflare Logs."
+            error: "Модель вернула ответ в неизвестном формате. Проверьте Cloudflare Logs.",
           }, 502);
         }
 
@@ -369,7 +459,6 @@ export default {
           model: AI_MODEL,
           ...(guest ? { remaining: guest.remaining, guest: true } : {})
         }, 200, guest?.cookie);
-
       } catch (e) {
         const message = String(e?.message || e).slice(0, 500);
         console.error("CHAT error:", message);
@@ -378,5 +467,5 @@ export default {
     }
 
     return reply({ error: "Not found" }, 404);
-  }
+  },
 };
